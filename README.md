@@ -20,4 +20,11 @@ OpticsFoudry's control system is suitable for many ultracold atom experiments an
    2. [User interface and operation](Manual/UserInterface.md)  
    3. [Programing experimental sequences](Manual/ProgrammingSequences.md)  
 2. ControlAPI
-   1. [Installation and Configuration](Manual/InstallationAndConfigurationOfControlAPI.md)  
+   1. [Installation and Configuration](Manual/InstallationAndConfigurationOfControlAPI.md) 
+
+
+&nbsp;
+
+## Sequencer firmware
+
+The sequencer firmware compatible with this software is [OF_Sequencer_Zturn](https://github.com/opticsfoundry/OF_Sequencer_Zturn) and uses the Z-turn board V2. 

@@ -204,10 +204,3 @@ If you did not yet regenerate those files, you will get a warning when starting 
 
 Control.exe directly supports the [Vision](https://github.com/opticsfoundry/Vision_AQuRA) data acquisition system and can easily be adapted to others.
 
-
-&nbsp;
-
-## Sequencer firmware
-
-The sequencer firmware compatible with this software is [OF_Sequencer_Zturn](https://github.com/opticsfoundry/OF_Sequencer_Zturn) and uses the Z-turn board V2. 
-
