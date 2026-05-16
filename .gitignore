@@ -1,0 +1,59 @@
+# Visual Studio specific files
+.vs/
+*.vcxproj.user
+*.VC.db
+*.VC.opendb
+*.suo
+*.cache
+*.log
+
+# Build folders
+Debug/
+Release/
+x64/
+x86/
+ipch/
+
+# CMake or build system artifacts (if any)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Backup files
+*.bak
+*.tmp
+*.old
+*.swp
+
+# Object and binary files
+*.obj
+*.o
+*.lib
+*.dll
+*.exe
+*.pdb
+*.idb
+
+# Generated data
+*.tlog
+*.lastbuildstate
+
+# Ignore other potentially large internal folders
+old_backup_code_snippets/
+inpout32_source_and_bins/
+
+# Optional: Ignore user output folders or temporary data
+u/
+
+# Ignore all files in the directory
+DebugFiles/*
+Data/*
+# But keep the directory itself
+!DebugFiles/.gitkeep
+!Data/.gitkeep
+!Data/DataVisualizer.py
+/Source/Control.aps
+
+/enc_temp_folder/9ab85198375ded61c8d1aa2c91bdaed7
+/ConfigParams/MeasurementQueue.txt
