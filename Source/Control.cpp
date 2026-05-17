@@ -857,9 +857,9 @@ API_EXPORT bool ControlAPI_Create(const char* ParamFileDirectory, bool AfxInit, 
 	}
 
 	// NOTE: Types like DWORD, CString need to be handled according to your environment
-	API_EXPORT bool ControlAPI_WaitTillEndOfSequenceThenGetInputData(unsigned char** buffer, unsigned long* buffer_length, unsigned long* endTimeOfCycle, double timeout) { API_LOCK_GUARD;
+	API_EXPORT bool ControlAPI_WaitTillEndOfSequenceThenGetInputData(unsigned char** buffer, unsigned long* buffer_length, unsigned long* endTimeOfCycle, double timeout_in_sec) { API_LOCK_GUARD;
 		// Note: DWORD is assumed to be unsigned long, adjust as necessary.
-		bool ret =  ControlAPI.WaitTillEndOfSequenceThenGetInputData(*buffer, *buffer_length, *endTimeOfCycle, timeout, /*auto_delete_buffer */ true);
+		bool ret =  ControlAPI.WaitTillEndOfSequenceThenGetInputData(*buffer, *buffer_length, *endTimeOfCycle, timeout_in_sec, /*auto_delete_buffer */ true);
 		API_UNLOCK;
 		return ret;
 	}

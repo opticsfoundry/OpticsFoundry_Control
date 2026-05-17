@@ -96,7 +96,7 @@ public:
 	void WriteBufferToFile(unsigned __int32* buffer, unsigned long length);
 	void WriteBusDeviceCommandsToFile(unsigned __int32* buffer, unsigned long length);
 	bool ConnectSocket(LPCTSTR lpszAddress, UINT port, double aBusFrequency, double aFPGAClockFrequencyInHz, bool aFPGAUseExternalClock, bool aFPGAUseStrobeGenerator);
-	bool WaitTillFinished();
+	bool WaitTillFinished(double timeout_in_s = 0);
 	bool Start();
 	bool Stop();
 	bool CloseConnection();
@@ -136,6 +136,7 @@ private:
 	bool AttemptSetFrequency(double Frequency);
 	bool AttemptGetFrequency(double& Frequency);
 	bool AttemptGetPeriodicTriggerError(bool& Error);
+	bool AttemptWaitTillFinished(double timeout_in_s);
 	bool AttemptWaitTillEndOfSequenceThenGetInputData(unsigned char*& buffer, unsigned long& buffer_length, DWORD& EndTimeOfCycle, double timeout_in_s, bool auto_delete_buffer = true);
 };
 

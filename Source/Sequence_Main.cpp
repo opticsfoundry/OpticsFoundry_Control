@@ -2262,7 +2262,7 @@ void CSequence::ReadoutFPGAMemory() {
 			unsigned char* buffer = NULL;
 			unsigned long buffer_length = 0; 
 			DWORD EndTimeOfCycle = 0;
-			double timeout_in_s = 10;
+			double timeout_in_s = 200;
 			bool success = Sequencer0->WaitTillEndOfSequenceThenGetInputData(buffer, buffer_length, EndTimeOfCycle, timeout_in_s);
 			if (!success) {
 				ControlMessageBox("CSequence::ReadoutFPGAMemory : GetCycleData: no data");

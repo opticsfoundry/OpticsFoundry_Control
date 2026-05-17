@@ -139,7 +139,7 @@ class ConfigBuilder:
 
 if __name__ == "__main__":
     builder = ConfigBuilder()
-    builder.RegisterSequencer(IP="192.168.0.112", Port=57978, ClockFrequencyinMHz=100, BusFrequencyinMHz=2, DebugOn = False) #0.104 #90.108
+    builder.RegisterSequencer(IP="10.10.28.118", Port=57978, ClockFrequencyinMHz=100, BusFrequencyinMHz=2, DebugOn = False) #0.104 #90.108
 
     analog_out_configs = [
         (24, True, -10, 10), #each of these lines configures 4 analog outputs in consecutive order of addresses

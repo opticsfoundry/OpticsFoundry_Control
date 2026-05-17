@@ -1505,11 +1505,6 @@ bool CEthernetMultiIOControllerOpticsFoundry::Reset() {
 //	return AttemptNetworkCommand([this]() {return Command("reset"); });
 }
 
-bool CEthernetMultiIOControllerOpticsFoundry::WaitTillFinished() {
-	return Command("wait_till_finished");
-//	return AttemptNetworkCommand([this]() {return Command("wait_till_finished"); });
-}
-
 bool CEthernetMultiIOControllerOpticsFoundry::Start() {
 	if (!Connected) return true;
 	//Network->Reconnect(/*maxRetries*/ 3,/*timeout_s*/2,/*delay_ms*/1000); //2025 01 30: reset connection before starting in an attempt to avoid st
@@ -1618,6 +1613,30 @@ bool CEthernetMultiIOControllerOpticsFoundry::CheckReady(double timeout_in_secon
 	//return AttemptNetworkCommand([this]() {return Command("check_ready"); }); //Do not use OptimizedCommand here. The whole point is to get a "Ready" back.
 }
 
+
+bool CEthernetMultiIOControllerOpticsFoundry::WaitTillFinished(double timeout_in_s) {
+	if (!Connected) return true;
+	unsigned int attempts = 0;
+	while ((attempts < MaxReconnectAttempts) && (!AttemptWaitTillFinished(timeout_in_s))) {
+		Network->ResetConnection();
+		Sleep_ms(100);
+		attempts++;
+	}
+	return (attempts < MaxReconnectAttempts);
+}
+
+
+
+bool CEthernetMultiIOControllerOpticsFoundry::AttemptWaitTillFinished(double timeout_in_s) {
+	if (!Command("wait_till_finished")) return false;
+	WriteDouble(timeout_in_s);//sequence timeout, <0.001 means no timeout
+	int Success;
+	if (!ReadInt(Success, timeout_in_s + 5)) return false;
+	if (Success == 0) ControlMessageBox("CEthernetMultiIOControllerOpticsFoundry::AttemptWaitTillFinished : timeout : sequence execution took too long.");
+	return true;
+}
+
+
 bool CEthernetMultiIOControllerOpticsFoundry::WaitTillEndOfSequenceThenGetInputData(unsigned char*& buffer, unsigned long& buffer_length, DWORD& EndTimeOfCycle, double timeout_in_s, bool auto_delete_buffer) {
 	if (!Connected) return true;
 	unsigned int attempts = 0;
@@ -1647,9 +1666,23 @@ bool CEthernetMultiIOControllerOpticsFoundry::AttemptWaitTillEndOfSequenceThenGe
 	//progress bar with communication
 	if (!Command("wait_till_end_of_sequence_then_get_input_data")) return false;
 	
+
+
+	WriteDouble(timeout_in_s);//sequence timeout, <0.001 means no timeout
+	WriteDouble(timeout_in_s);//read input data timeout, <0.001 means no timeout
+
+	int Success;
+	if (!ReadInt(Success, timeout_in_s + 5)) return false;
+	if (Success == 0) ControlMessageBox("CEthernetMultiIOControllerOpticsFoundry::AttemptWaitTillEndOfSequenceThenGetInputData : timeout : sequence execution took too long.");
+
+
 	int PeriodicTriggerError;
 	if (!ReadInt(PeriodicTriggerError, timeout_in_s)) return false;
 	EndTimeOfCycle = GetTickCount();
+
+	if (!ReadInt(Success, timeout_in_s + 5)) return false;
+	if (Success == 0) ControlMessageBox("CEthernetMultiIOControllerOpticsFoundry::AttemptWaitTillEndOfSequenceThenGetInputData : timeout : reading input data took too long.");
+
 	//int InputBufferContentOriginSequence;
 	//ReadInt(InputBufferContentOriginSequence);
 	//int InputBufferContentsLength;

@@ -155,7 +155,7 @@ API_EXPORT bool ControlAPI_GetNextCycleStartTimeAndNumber(long* timeTillNextCycl
 API_EXPORT bool ControlAPI_ResetCycleNumber();
 API_EXPORT bool ControlAPI_InterruptSequence();
 API_EXPORT void ControlAPI_WriteReadSPI(unsigned int chip_select, unsigned int num_bits_out, unsigned long long data_high, unsigned long long data_low, unsigned int num_bits_in);
-API_EXPORT bool ControlAPI_WaitTillEndOfSequenceThenGetInputData(unsigned char** buffer, unsigned long* buffer_length, unsigned long* endTimeOfCycle, double timeout);
+API_EXPORT bool ControlAPI_WaitTillEndOfSequenceThenGetInputData(unsigned char** buffer, unsigned long* buffer_length, unsigned long* endTimeOfCycle, double timeout_in_sec);
 API_EXPORT bool ControlAPI_GetCycleData(unsigned char** buffer, unsigned long* buffer_length, long* cycleNumber, unsigned long* lastCycleEndTime, unsigned long* lastCycleStartPreTriggerTime, bool* cycleError, const char** errorMessages);
 API_EXPORT bool ControlAPI_ClearAnalogInputQueue();
 API_EXPORT bool ControlAPI_HasInterlockTriggered();
