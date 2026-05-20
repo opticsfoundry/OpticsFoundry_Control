@@ -56,22 +56,17 @@
   "DigitalOutBoards": [
     {
       "Sequencer": 0,
+      "Address": 1,
+      "NumberChannels": 16
+    },
+    {
+      "Sequencer": 0,
       "Address": 2,
       "NumberChannels": 16
     },
     {
       "Sequencer": 0,
       "Address": 21,
-      "NumberChannels": 16
-    },
-    {
-      "Sequencer": 0,
-      "Address": 3,
-      "NumberChannels": 16
-    },
-    {
-      "Sequencer": 0,
-      "Address": 4,
       "NumberChannels": 16
     },
     {
@@ -87,6 +82,11 @@
     {
       "Sequencer": 0,
       "Address": 7,
+      "NumberChannels": 16
+    },
+    {
+      "Sequencer": 0,
+      "Address": 8,
       "NumberChannels": 16
     }
   ],
@@ -248,14 +248,14 @@
   "DDSAD9959Boards": [
     {
       "Sequencer": 0,
-      "Address": 1,
-      "ClockFrequencyinMHz": 25,
+      "Address": 3,
+      "ClockFrequencyinMHz": 500,
       "FrequencyMultiplier": 1
     },
     {
       "Sequencer": 0,
-      "Address": 10,
-      "ClockFrequencyinMHz": 25,
+      "Address": 4,
+      "ClockFrequencyinMHz": 500,
       "FrequencyMultiplier": 1
     }
   ],

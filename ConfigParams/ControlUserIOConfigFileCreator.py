@@ -129,7 +129,7 @@ class UserIOConfigBuilder:
             "Color": Color
         })
 
-    def add_dds_ad9958(self, Name, Description, Address,
+    def add_dds_ad9959(self, Name, Description, Address,
                        InitFrequencyCh0=77.0, InitPowerCh0=0, InitPhaseCh0=0,
                        InitFrequencyCh1=77.0, InitPowerCh1=0, InitPhaseCh1=0,
                        MinFrequency=0.0, MaxFrequency=150.0,
@@ -270,39 +270,39 @@ if __name__ == "__main__":
 
     builder.add_static_text("")
     builder.add_static_text(Text="AQuRA Digital Out")
-    builder.add_digital_out(Name=f"OscilloscopeTrigger", Description=f"Oscilloscope Trigger", Address=3, Bit = 0)
-    builder.add_digital_out(Name="CameraTrigger0", Description="Camera Trigger 0", Address=3, Bit=1)
-    builder.add_digital_out(Name="CameraTrigger1", Description="Camera Trigger 1", Address=3, Bit=2)
-    builder.add_digital_out(Name="PMTTrigger", Description="PMT Trigger", Address=3, Bit=3)
-    builder.add_digital_out(Name="MOTCoilsToHelmholtz", Description="MOT Coils to Helmholtz", Address=3, Bit=4)
-    builder.add_digital_out(Name="ElectrodeA", Description="Electrode A", Address=3, Bit=5)
-    builder.add_digital_out(Name="ElectrodeB", Description="Electrode B", Address=3, Bit=6)
-    builder.add_digital_out(Name="ElectrodeC", Description="Electrode C", Address=3, Bit=7)
-    builder.add_digital_out(Name="BiasX", Description="Bias X", Address=3, Bit=8)
-    builder.add_digital_out(Name="BiasY", Description="Bias Y", Address=3, Bit=9)
-    builder.add_digital_out(Name="BiasZ", Description="Bias Z", Address=3, Bit=10)
+    builder.add_digital_out(Name=f"OscilloscopeTrigger", Description=f"Oscilloscope Trigger", Address=1, Bit = 0)
+    builder.add_digital_out(Name="CameraTrigger0", Description="Camera Trigger 0", Address=1, Bit=1)
+    builder.add_digital_out(Name="CameraTrigger1", Description="Camera Trigger 1", Address=1, Bit=2)
+    builder.add_digital_out(Name="PMTTrigger", Description="PMT Trigger", Address=1, Bit=3)
+    builder.add_digital_out(Name="MOTCoilsToHelmholtz", Description="MOT Coils to Helmholtz", Address=1, Bit=4)
+    builder.add_digital_out(Name="ElectrodeA", Description="Electrode A", Address=1, Bit=5)
+    builder.add_digital_out(Name="ElectrodeB", Description="Electrode B", Address=1, Bit=6)
+    builder.add_digital_out(Name="ElectrodeC", Description="Electrode C", Address=1, Bit=7)
+    builder.add_digital_out(Name="BiasX", Description="Bias X", Address=1, Bit=8)
+    builder.add_digital_out(Name="BiasY", Description="Bias Y", Address=1, Bit=9)
+    builder.add_digital_out(Name="BiasZ", Description="Bias Z", Address=1, Bit=10)
     
     builder.add_static_text(Text="D2=0, D1=0, D0=0: blue MOT")
     builder.add_static_text(Text="D2=0, D1=0, D0=1: red MOT")
     builder.add_static_text(Text="D2=0, D1=1, D0=1: optical pumping")
     builder.add_static_text(Text="D2=0, D1=1, D0=0: interrogation")
-    builder.add_digital_out(Name="TorunCoilDriverD0", Description="Torun Coil Driver D0", Address=3, Bit=11)
-    builder.add_digital_out(Name="TorunCoilDriverD1", Description="Torun Coil Driver D1", Address=3, Bit=12)
-    builder.add_digital_out(Name="TorunCoilDriverD2", Description="Torun Coil Driver D2", Address=3, Bit=13)
-    builder.add_digital_out(Name="TorunCoilDriverTrigger", Description="Torun Coil Driver Trigger", Address=3, Bit=14)    
-    builder.add_digital_out(Name="10MHzRfSourceSelection", Description="10MHz RF source selection", Address=3, Bit= 15)
+    builder.add_digital_out(Name="TorunCoilDriverD0", Description="Torun Coil Driver D0", Address=1, Bit=11)
+    builder.add_digital_out(Name="TorunCoilDriverD1", Description="Torun Coil Driver D1", Address=1, Bit=12)
+    builder.add_digital_out(Name="TorunCoilDriverD2", Description="Torun Coil Driver D2", Address=1, Bit=13)
+    builder.add_digital_out(Name="TorunCoilDriverTrigger", Description="Torun Coil Driver Trigger", Address=1, Bit=14)    
+    builder.add_digital_out(Name="10MHzRfSourceSelection", Description="10MHz RF source selection", Address=1, Bit= 15)
     builder.add_new_column()
     builder.add_static_text(Text="Shutters")
-    builder.add_digital_out(Name="BlueMasterShutter", Description="Blue Master Shutter", Inverted = True, Address=6, Bit=11)
-    builder.add_digital_out(Name="BlueDetectionShutter", Description="Blue Detection Shutter", Inverted = True, Address=6, Bit=8)
-    builder.add_digital_out(Name="BlueMOTShutter", Description="Blue MOT Shutter", Inverted = True, Address=6, Bit=6)
-    builder.add_digital_out(Name="ZSShutter", Description="ZS Shutter", Inverted = True, Address=6, Bit=5)    
-    builder.add_digital_out(Name="RedMOTShutter", Description="Red MOT Shutter", Inverted = False, Address=6, Bit=2)
-    builder.add_digital_out(Name="RedPumpShutter", Description="Red Pump Shutter", Inverted = True, Address=6, Bit=9)
-    #builder.add_digital_out(Name="RepumpShutter", Description="Repump Shutter", Inverted = True, Address=6, Bit=5)
-    builder.add_digital_out(Name="PumpPolarization1Shutter", Description="Pump Polarization 1 Shutter", Inverted = True, Address=6, Bit=3)
-    builder.add_digital_out(Name="PumpPolarization2Shutter", Description="Pump Polarization 2 Shutter", Inverted = False, Address=6, Bit=4)
-    builder.add_digital_out(Name="CoarseSpectroscopyShutter", Description="Coarse Spectroscopy Shutter", Inverted = True, Address=6, Bit=10)
+    builder.add_digital_out(Name="BlueMasterShutter", Description="Blue Master Shutter", Inverted = True, Address=2, Bit=11)
+    builder.add_digital_out(Name="BlueDetectionShutter", Description="Blue Detection Shutter", Inverted = True, Address=2, Bit=8)
+    builder.add_digital_out(Name="BlueMOTShutter", Description="Blue MOT Shutter", Inverted = True, Address=2, Bit=6)
+    builder.add_digital_out(Name="ZSShutter", Description="ZS Shutter", Inverted = True, Address=2, Bit=5)    
+    builder.add_digital_out(Name="RedMOTShutter", Description="Red MOT Shutter", Inverted = False, Address=2, Bit=2)
+    builder.add_digital_out(Name="RedPumpShutter", Description="Red Pump Shutter", Inverted = True, Address=2, Bit=9)
+    #builder.add_digital_out(Name="RepumpShutter", Description="Repump Shutter", Inverted = True, Address=2, Bit=5)
+    builder.add_digital_out(Name="PumpPolarization1Shutter", Description="Pump Polarization 1 Shutter", Inverted = True, Address=2, Bit=3)
+    builder.add_digital_out(Name="PumpPolarization2Shutter", Description="Pump Polarization 2 Shutter", Inverted = False, Address=2, Bit=4)
+    builder.add_digital_out(Name="CoarseSpectroscopyShutter", Description="Coarse Spectroscopy Shutter", Inverted = True, Address=2, Bit=10)
 
     builder.add_new_menu(Text="AQuRA AD9854 DDS 1")
     builder.add_static_text(Text="AQuRA AD9854 DDS")
@@ -327,7 +327,7 @@ if __name__ == "__main__":
     builder.add_dds_ad9858(Name="SpareAD9858DDS", Description="Spare AD9858 DDS", Address=76, MinFrequency=160.0, MaxFrequency=240.0, InitFrequency=200.0)
     builder.add_static_text(Text="")
     builder.add_static_text(Text="AQuRA AD9959 DDS")
-    builder.add_dds_ad9958(Name="LatticeEOM", Description="Lattice EOM", Address=1, MinFrequency=0.0, MaxFrequency=400.0)
+    builder.add_dds_ad9959(Name="LatticeEOM", Description="Lattice EOM", Address=3, MinFrequency=0.0, MaxFrequency=400.0)
 
     builder.add_new_menu(Text="Test DDS")
     builder.add_static_text(Text="Test AD9854 DDS")
@@ -337,7 +337,7 @@ if __name__ == "__main__":
     builder.add_dds_ad9858(Name="UserIOTestDDSAD9858_0", Description="Test DDS AD9858 0", Address=52, PowerControl="PowerIndB", InitFrequency=78.0, InitPower=-10, MinFrequency=60.0, MaxFrequency=100.0)
     builder.add_static_text(Text="")
     builder.add_static_text(Text="Test AD9959 DDS")
-    builder.add_dds_ad9958(Name="UserIOTestDDSAD9959_0", Description="Test DDS AD9959 0", Address=10)
+    builder.add_dds_ad9959(Name="UserIOTestDDSAD9959_0", Description="Test DDS AD9959 0", Address=4)
     
     builder.add_new_menu(Text="Spare User IO")
     builder.add_static_text(Text="Spare Analog Outs")
@@ -352,7 +352,7 @@ if __name__ == "__main__":
     for i in range(4):
         builder.add_digital_out(Name=f"ExtraClockShutter{i}", Description=f"Extra Clock Shutter {i}", Address=6, Bit = i + 12)
     for i in range(8):
-        builder.add_digital_out(Name=f"AdditionalShutter{i}", Description=f"Additional Shutter {i}", Address=4, Bit = i)
+        builder.add_digital_out(Name=f"AdditionalShutter{i}", Description=f"Additional Shutter {i}", Address=8, Bit = i)
     
     
     builder.save()
