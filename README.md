@@ -28,3 +28,13 @@ OpticsFoudry's control system is suitable for many ultracold atom experiments an
 ## Sequencer firmware
 
 The sequencer firmware compatible with this software is [OF_Sequencer_Zturn](https://github.com/opticsfoundry/OF_Sequencer_Zturn) and uses the Z-turn board V2. 
+
+
+&nbsp;
+
+## OptiscFoundry Control Electronics
+
+You can order the OpticsFoundry control electronics from [OpticsFoundry](https://www.opticsfoundry.com/).
+
+ ![OpticsFoundry control electronics](Photos/OpticsFoundry_Control_Electronics.jpeg)
+
