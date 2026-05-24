@@ -6,6 +6,7 @@
 
 #include "stdafx.h"
 #include "Sequence.h"
+#include "SequenceImplementationIncludes.h"
 
 
 #ifdef _DEBUG

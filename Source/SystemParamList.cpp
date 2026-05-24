@@ -6,7 +6,6 @@
 #include "SystemParamList.h"
 #include <math.h>
 #include "resource.h"
-#include "Sequence.h"
 #include "color.h"
 
 #ifdef _DEBUG
@@ -43,7 +42,7 @@ void CSystemParamList::Initialize() {
 	RegisterString(UserParameterFileName, "UserParameterFileName", *SourceFilePath + "ControlParam.dat", 200, "UserParameterFileName");
 	RegisterString(OutputListFilename, "OutputListFilename", "OutputList.dat", 200, "Output List Filename");
 	RegisterString(OutputListFilenameComputerReadable, "OutputListFilenameComputerReadable", "OutputListComputerReadable.dat", 200, "Output List Filename CR");
-	AddButton(IDC_SAVE_OUTPUT_LIST, Sequence);
+	AddButton(IDC_SAVE_OUTPUT_LIST, SequenceMessageReceiver);
 	AddStatic("");
 	AddStatic("Configuration", "", ColorGreen);
 	RegisterLong(&MainDialogStartX, "MainDialogStartX", -10000, 10000, "Main Dialog Start X windows cooords");
@@ -51,7 +50,7 @@ void CSystemParamList::Initialize() {
 	RegisterBool(&StartRemoteServer, "StartRemoteServer", "Start remote server?", "S");
 	AllowMultipleInstancesOfControl = false;
 	RegisterBool(&AllowMultipleInstancesOfControl, "AllowMultipleInstancesOfControl", "Allow multiple instances of Control DLL?");
-	AddButton(IDM_START_REMOTE_CONTROL_SERVER, Sequence);
+	AddButton(IDM_START_REMOTE_CONTROL_SERVER, SequenceMessageReceiver);
 	RegisterBool(&ExternalTrigger, "ExternalTrigger", "External Trigger 0?", "T");
 	RegisterBool(&ExternalTrigger1, "ExternalTrigger1", "External Trigger 1?", "T");
 	RegisterBool(&ExternalClock, "ExternalClock", "External Clock 0?", "C");
@@ -227,4 +226,3 @@ CString* SlaveServerDebugName;
 
 double RealSystemFrequency;
 
-	

@@ -8,7 +8,7 @@
 #include "control.h"
 #include "output.h"
 #include "AnalogOut.h"
-#include "IOList.h"
+#include "IORegister.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -16,16 +16,16 @@
 
 IMPLEMENT_SERIAL(CSequenceListAnalogOut ,CSequenceListPoint,1)
 
-CSequenceListAnalogOut::CSequenceListAnalogOut(unsigned int aNr, double aUnscaledValue, double aVolt) 
+CSequenceListAnalogOut::CSequenceListAnalogOut(unsigned int aNr, double aUnscaledValue, double aVolt)
 :CSequenceListPoint()
 {
 	Nr=aNr;
 	Volt=aVolt;
 	UnscaledValue=aUnscaledValue;
-	AnalogOut=IOList->GetAnalogOut(aNr,/*DoErrorMessage*/false);
+	AnalogOut=IORegisterList->GetAnalogOut(aNr,/*DoErrorMessage*/false);
 }
 
-CSequenceListAnalogOut::CSequenceListAnalogOut( ) 
+CSequenceListAnalogOut::CSequenceListAnalogOut( )
 :CSequenceListPoint()
 {
 	Nr=-1;
@@ -49,7 +49,7 @@ CString CSequenceListAnalogOut::GetCommand()
 CString CSequenceListAnalogOut::GetDescription(int Mode) {
 	CString buf="";
 	if (Mode==0) {
-		buf.Format("%s%s[%u](%.4f,%.4f)",CSequenceListPoint::GetDescription(Mode),GetAnalogOutName(Nr),Nr,UnscaledValue,Volt);	
+		buf.Format("%s%s[%u](%.4f,%.4f)",CSequenceListPoint::GetDescription(Mode),GetAnalogOutName(Nr),Nr,UnscaledValue,Volt);
 	} else if (Mode==1) {
 		buf.Format("%s\t %i\t %u\t 1\t -999\t %.4f\t -999\t %.4f\t -999\t -999\t -999",CSequenceListPoint::GetDescription(Mode),2,Nr,UnscaledValue,Volt);	//Computerreadable2
 	}

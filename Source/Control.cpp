@@ -8,7 +8,7 @@
 #include "MainFrm.h"
 #include "ChildFrm.h"
 #include "Sequence.h"
-#include "ParamList.h"
+#include "ParamListCore.h"
 #include "MainDialog.h"
 #include "IOList.h"
 #include "Output.h"
@@ -41,9 +41,13 @@ static char THIS_FILE[] = __FILE__;
 COutput* Output;
 //CNetIO *NetIO;
 CIOList* IOList = NULL;
+CIORegister *IORegisterList = NULL;
+CMenuObList *IOListMenu = NULL;
 CParamList* ParamList = NULL;
 CSystemParamList *SystemParamList = NULL;
 CSlaveIOList *SlaveIOList = NULL;
+CMessageReceiver *SequenceMessageReceiver = NULL;
+CSequenceLib *SequenceBase = NULL;
 CSequence *Sequence = NULL;
 CSlaveServer *SlaveServer = NULL;
 CUniMessList* UniMessList = NULL;
@@ -98,6 +102,8 @@ CControlApp::~CControlApp() {
 	if (IOList) {
 		delete IOList;
 		IOList = NULL;
+		IORegisterList = NULL;
+		IOListMenu = NULL;
 	}
 	if (SlaveIOList) {
 		delete SlaveIOList;
@@ -118,6 +124,8 @@ CControlApp::~CControlApp() {
 	if (Sequence) {
 		delete Sequence;
 		Sequence = NULL;
+		SequenceBase = NULL;
+		SequenceMessageReceiver = NULL;
 	}
 	if (ParamFileName) {
 		delete ParamFileName;
@@ -428,6 +436,8 @@ extern "C" {
 	//	Enable3dControlsStatic();	// Call this when linking to MFC statically
 	//#endif
 		if (!Sequence) Sequence = new CSequence();
+		SequenceBase = Sequence;
+		SequenceMessageReceiver = Sequence;
 		if (!SystemParamList) {
 			SystemParamList = new CSystemParamList();
 			SystemParamList->Initialize();
@@ -451,6 +461,8 @@ extern "C" {
 		
 		if (!IOList) {
 			IOList = new CIOList();
+			IORegisterList = IOList;
+			IOListMenu = IOList;
 			IOList->Initialize();
 		}
 		
@@ -585,6 +597,8 @@ API_EXPORT bool ControlAPI_Create(const char* ParamFileDirectory, bool AfxInit, 
 		if (IOList) {
 			delete IOList;
 			IOList = NULL;
+			IORegisterList = NULL;
+			IOListMenu = NULL;
 		}
 		if (SlaveIOList) {
 			delete SlaveIOList;
@@ -605,6 +619,8 @@ API_EXPORT bool ControlAPI_Create(const char* ParamFileDirectory, bool AfxInit, 
 		if (Sequence) {
 			delete Sequence;
 			Sequence = NULL;
+			SequenceBase = NULL;
+			SequenceMessageReceiver = NULL;
 		}
 		if (Output) {
 			delete Output;
@@ -1150,6 +1166,8 @@ BOOL CControlApp::InitInstance()
 //	Enable3dControlsStatic();	// Call this when linking to MFC statically
 //#endif
 	Sequence = new CSequence();
+	SequenceBase = Sequence;
+	SequenceMessageReceiver = Sequence;
 	if (!SystemParamList) {
 		SystemParamList = new CSystemParamList();
 		SystemParamList->Initialize();
@@ -1175,6 +1193,8 @@ BOOL CControlApp::InitInstance()
 
 	if (!IOList) {
 		IOList = new CIOList();
+		IORegisterList = IOList;
+		IOListMenu = IOList;
 		IOList->Initialize();
 	}
 

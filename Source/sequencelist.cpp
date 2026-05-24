@@ -17,7 +17,7 @@
 #include "SequenceListWaitTillBusBufferEmpty.h"
 #include "SequenceListSequencerCommand.h"
 #include "Output.h"
-#include "Sequence.h"
+#include "SequenceLib.h"
 #include ".\sequencelist.h"
 #include "SequenceListComment.h"
 #include <fstream>
@@ -94,7 +94,7 @@ void CSequenceList::StoreStopSequence(double aTotalTime) {
 
 bool CSequenceList::Execute(bool aShowRunProgressDialog, bool NonBlocking) {
 	if (List.GetHeadPosition()==NULL) return false;
-	Sequence->StartSequence(Trigger,parent,aShowRunProgressDialog);		
+	SequenceBase->StartSequence(Trigger,parent,aShowRunProgressDialog);
 	CSequenceListPoint* Point;	
 	for (POSITION pos = List.GetHeadPosition(); pos != NULL; ) {		
 		Point=(CSequenceListPoint*)List.GetNext(pos);	
@@ -114,7 +114,7 @@ bool CSequenceList::Execute(bool aShowRunProgressDialog, bool NonBlocking) {
 	Output->WaitTillBusBufferEmpty(1234);
 	//Output->Wait(0.1);
 	//Output->Wait(10); //0.1 microsecond are required to safely put out everything with NI6534. We wait 10ms, 100x longer for safety
-	Sequence->StopSequence(NonBlocking);
+	SequenceBase->StopSequence(NonBlocking);
 
 	//List.RemoveAll(); //for fast finish, no debugging options
 	//LastTime=-10;	

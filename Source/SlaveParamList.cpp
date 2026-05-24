@@ -8,7 +8,7 @@ static char THIS_FILE=__FILE__;
 #define new DEBUG_NEW
 #endif
 
-#include "ParamList.h"
+#include "ParamListCore.h"
 #include "stdafx.h"
 #include "SlaveParamList.h"
 

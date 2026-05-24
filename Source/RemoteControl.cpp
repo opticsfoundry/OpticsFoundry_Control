@@ -7,7 +7,7 @@
 #include "RemoteControl.h"
 #include "clntsock.h"
 #include "lstnsock.h"
-#include "iolist.h"
+#include "IORegister.h"
 #include "sequence.h"
 #include "ControlAPI.h"
 #include <atlconv.h>
@@ -96,7 +96,7 @@ void CRemoteControl::DigitalOut()
 	long Value;	
 	ReceiveMsg(Name);	
 	ReadLong(Value);
-	IOList->DigitalOut(Name,Value!=0);
+	IORegisterList->DigitalOut(Name,Value!=0);
 	CString buf;
 	buf.Format("%s(%i)",Name,(Value) ? 1 : 0);
 	MessageBuf=MessageBuf+buf+"\n";
@@ -109,7 +109,7 @@ void CRemoteControl::AnalogOut()
 	double Value;
 	ReceiveMsg(Name);		
 	ReadDouble(Value);
-	IOList->AnalogOut(Name,Value);
+	IORegisterList->AnalogOut(Name,Value);
 	CString buf;
 	buf.Format("%s(%.3f)",Name,Value);	
 	MessageBuf=MessageBuf+buf+"\n";

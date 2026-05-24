@@ -13,111 +13,13 @@
 
 #include "stdafx.h"
 #include "SequenceLib.h"
-#include "IOList.h"
-#include "ParamList.h"
-#include "UtilityDialog.h"
-#include "MeasurementList.h"
-#include "Control.h"
-#include "EthernetMultiIOControllerOpticsFoundry.h"
-#include <fstream>
-#include <string>
-
-//the following could be in SequenceXXX.cpp, but for convenience, we put it here
-
-#include "Control.h"
-#include "Sequence.h"
-#include "ParamList.h"
-#include "SystemParamList.h"
-#include "IOList.h"
-#include "color.h"
-#include "Ramp.h"
-#include "CosineRamp.h"
-#include "CosineSquareRamp.h"
-#include "RampdBLinear.h"
-#include "ParabolicRamp.h"
-#include "SineRamp.h"
-#include "TweezerRamp.h"
-#include "StepwiseLinearRamp.h"
-#include "Sin.h"
-#include "Pulse.h"
-#include "BlackmanPulse.h"
-#include "Square.h"
-#include "SlaveWaveform.h"
-#include "Grid2DWaveform.h"
-#include "TimeStretch.h"
-#include "Output.h"
-#include "NetIO.h"
-#include "Param.h"
-#include "MeasurementPoint.h"
-#include "ExecuteMeasurementDlg.h"
-#include "MeasurementQueue.h"
-#include "UniMessList.h"
-#include "SRS345.h"
-#include "HP5334A.h"
-#include "RSSML0x.h"
-#include "EIP548A.h"
-#include "Agilent33250A.h"
-#include "Agilent33250ASerial.h"
-#include "TektronixAWG5105.h"
-#include "EvaporationSweep.h"
-#include "Rectangle.h"
-#include "DelayedWaveform.h"
-#include "FiberLaser.h"
-#include "VerdiLaser.h"
-#include "BurleighWA1000.h"
-#include "OmegaiSeries.h"
-#include <time.h>
-#include <sys/timeb.h>
-#include "SlaveIO.h"
-#include "Linear.h"
-#include "Polynom.h"
-#include "RangeCheck.h"
-#include "ConsecutiveCalibration.h"
-#include "Vision.h"
-#include "VCOCalibration.h"
-#include "StepwiseLinearCalibration.h"
-#include "Slide.h"
-#include "ni488.h"
-#include "spline.h"
-#include "DDSCalibration.h"
-#include "LaserLock.h"
-#include "TektronixTDS524A.h"
-#include ".\sequence.h"
-#include "ovencontrol.h"
-#include "UtilityDialog.h"
-#include "Utilities.h"
-#include "IPGLaser.h"
-#include "Windows.h"
-#include "Mmsystem.h"
-#include "RemoteControl.h"
-#include "RunProgressDlg.h"
-#include "Keithley2000.h"
-#include "SequenceListPoint.h"
-#include "SequenceListWaveform.h"
-#include "SequenceListAnalogOut.h"
-#include "EasyDialog.h"
-#include "AD9852.h"
-#include "AD9858.h"
-#include "AD9959.h"
-#include "ADF4351.h"
-#include "PixelFont.h"
-#include "Mesh3D.h"
-#include "ControlAPI.h"
-#include "CTimestamp.h"
-#include "CoilDriverTorun3x3A.h"
-#include "CoilDriverTorun100A.h"
-#include "RemoteResetServer.h"
-#pragma comment(lib, "winmm.lib")
-#include "CHardwareConfig.h"
-#include "CUserIOConfig.h"
-#include <atlconv.h> // Required for CT2A
-
 
 class CExecuteMeasurementDlg;
 class CStepwiseLinearCalibration;
 class CLaserLock;
-
 class CControlAPI;
+class CRemoteControl;
+
 extern CControlAPI ControlAPI;
 extern CExecuteMeasurementDlg* CancelLoopDialog;
 extern const unsigned int DDSFrequencyWritePrecision;
@@ -319,7 +221,7 @@ public:
 	bool AskLaserPowerIncrease(int IPGLaserNumber);
 
 
-	CExecuteMeasurementDlg *MeasurementDialog;
+	CExecuteMeasurementDlg* MeasurementDialog;
 	/*bool VerdiSaveMode;
 	bool IPG100WLaserSaveMode;
 	bool OvenShutterSaveMode;	

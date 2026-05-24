@@ -8,7 +8,6 @@
 #include "UniMess.h"
 #include "ParameterDialog.h"
 #include "Measurement.h"
-#include "Sequence.h"
 #include "ParamInt.h"
 #include "ParamBool.h"
 
@@ -119,17 +118,17 @@ void CMeasurementQueue::ConstructMeasurementQueue()
 	ReferenceQueueIntervall=help;
 	ReferenceQueueCallFinishMethod=help2;
 	AddStatic("");
-	if (!Reference) AddButton(IDM_EXECUTE_MEASUREMENT_QUEUE,Sequence);	
-	else AddButton(IDM_EXECUTE_REFERENCE_MEASUREMENT_QUEUE,Sequence);	
+	if (!Reference) AddButton(IDM_EXECUTE_MEASUREMENT_QUEUE,SequenceMessageReceiver);
+	else AddButton(IDM_EXECUTE_REFERENCE_MEASUREMENT_QUEUE,SequenceMessageReceiver);
 	AddStatic("");
-	if (!Reference) AddButton(IDM_ITERATE_MEASUREMENT_QUEUE,Sequence);	
-	else AddButton(IDM_ITERATE_REFERENCE_MEASUREMENT_QUEUE,Sequence);	
+	if (!Reference) AddButton(IDM_ITERATE_MEASUREMENT_QUEUE,SequenceMessageReceiver);
+	else AddButton(IDM_ITERATE_REFERENCE_MEASUREMENT_QUEUE,SequenceMessageReceiver);
 	AddStatic("");
-	if (!Reference) AddButton(IDM_CLEAR_MEASUREMENT_QUEUE,Sequence);	
-	else AddButton(IDM_CLEAR_REFERENCE_MEASUREMENT_QUEUE,Sequence);
+	if (!Reference) AddButton(IDM_CLEAR_MEASUREMENT_QUEUE,SequenceMessageReceiver);
+	else AddButton(IDM_CLEAR_REFERENCE_MEASUREMENT_QUEUE,SequenceMessageReceiver);
 	AddStatic("");
-	if (!Reference) AddButton(IDM_CLEAR_LAST_OF_QUEUE,Sequence);	
-	else AddButton(IDM_CLEAR_LAST_OF_QUEUE,Sequence);
+	if (!Reference) AddButton(IDM_CLEAR_LAST_OF_QUEUE,SequenceMessageReceiver);
+	else AddButton(IDM_CLEAR_LAST_OF_QUEUE,SequenceMessageReceiver);
 	NewMenu("End of Menu",0,2);
 }
 

@@ -1,6 +1,7 @@
 
 #include "stdafx.h"
 #include "sequence.h"
+#include "SequenceImplementationIncludes.h"
 #include <fstream>
 #include <string>
 

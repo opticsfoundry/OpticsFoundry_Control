@@ -32,7 +32,11 @@
 class COutput;
 //class CNetIO;
 class CIOList;
+class CIORegister;
+class CMenuObList;
 class CParamList;
+class CMessageReceiver;
+class CSequenceLib;
 class CSequence;
 class CVision;
 class COvenControl;
@@ -44,7 +48,12 @@ class CMeasurementQueue;
 extern COutput *Output;
 //extern CNetIO *NetIO;
 extern CIOList *IOList;
+extern CIORegister *IORegisterList;
+extern CMenuObList *IOListMenu;
+extern bool IsAssemblingIOList;
 extern CParamList *ParamList;
+extern CMessageReceiver *SequenceMessageReceiver;
+extern CSequenceLib *SequenceBase;
 extern CSequence *Sequence;
 extern CVision *Vision;
 extern COvenControl *OvenControl;
@@ -55,6 +64,7 @@ extern CMeasurementQueue *MeasurementQueue;
 extern CMeasurementQueue *ReferenceMeasurementQueue;
 
 extern int AFXAPI ControlMessageBox(LPCTSTR lpszText, UINT nType = MB_OK, UINT nIDHelp = 0);
+extern CString GetAnalogInChannelName(unsigned int Channel);
 
 //#define USE_NIDAQ
 

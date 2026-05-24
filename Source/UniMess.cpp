@@ -15,8 +15,8 @@
 #include "Measurement.h"
 #include "MeasurementList.h"
 #include "ParamRegister.h"
-#include "ParamList.h"
-#include "Sequence.h"
+#include "ParamListCore.h"
+#include "SequenceLib.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -368,10 +368,10 @@ void CUniMess::Execute(CWnd* parent)
 	if (HardwareAccess) {
 		CMeasurementList* List=CreateMeasurementList();
 		if (List) {
-			Sequence->ExecuteMeasurement(List, parent);
+			SequenceBase->ExecuteMeasurement(List, parent);
 		}
 	} else {
-		Sequence->SendCyclicOperationCommand(1,MyNumber); //execute Unimess in cyclic operation mode
+		SequenceBase->SendCyclicOperationCommand(1,MyNumber); //execute Unimess in cyclic operation mode
 	}
 }
 
@@ -385,7 +385,7 @@ void CUniMess::StoreInQueue()
 		delete List;
 	}	 
 	if (!HardwareAccess) {
-		Sequence->SendCyclicOperationCommand(3,MyNumber); //store Unimess in queue
+		SequenceBase->SendCyclicOperationCommand(3,MyNumber); //store Unimess in queue
 	}
 }
 

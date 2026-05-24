@@ -6,7 +6,6 @@
 #include "Control.h"
 #include "UtilityDialog.h"
 #include "ElementButton.h"
-#include "ParamList.h"
 #include "Sequence.h"
 #include "resource.h"
 #include "SystemParamList.h"
@@ -29,7 +28,6 @@
 #include "AD9852.h"
 #include "AD9858.h"
 #include "AD9959.h"
-#include "IOList.h"
 //#include "Windows.h"
 #include "Mmsystem.h"
 #include "Keithley2000.h"
@@ -108,7 +106,7 @@ void CUtilityDialog::Initialize()
 	//for (int i=0;i<NrStartRunAnalogInputValues;i++) {
 	for (int b=0;b<NrAnalogInBoxes;b++) {
 		for (int c=0;c<8;c++) {
-			RegisterDoubleConstant(&StartRunAnalogInputValue[8*b+c],"StartRunAnalogInputValue"+itos(8*b+c),0,IOList->AnalogInChannelName[8*b+c]+"("+itos(b)+","+itos(c)+")","V");
+			RegisterDoubleConstant(&StartRunAnalogInputValue[8*b+c],"StartRunAnalogInputValue"+itos(8*b+c),0,GetAnalogInChannelName(8*b+c)+"("+itos(b)+","+itos(c)+")","V");
 		}
 	}
 		

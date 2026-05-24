@@ -11,7 +11,7 @@
 #endif // _MSC_VER > 1000
 
 #include "ParamRegister.h"
-#include "ParamList.h"
+#include "IOListConstants.h"
 
 class CUtilityDialog : public CParamRegister  
 {

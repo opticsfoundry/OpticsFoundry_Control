@@ -1940,6 +1940,7 @@
     <ClInclude Include="Source\HP5334A.h" />
     <ClInclude Include="Source\include\pybind11\pybind11.h" />
     <ClInclude Include="Source\IO.h" />
+    <ClInclude Include="Source\IOListConstants.h" />
     <ClInclude Include="Source\IOList.h" />
     <ClInclude Include="Source\IOList_shortcuts_auto_created.h" />
     <ClInclude Include="Source\IORegister.h" />
@@ -1989,6 +1990,7 @@
     <ClInclude Include="Source\ParameterDialog.h" />
     <ClInclude Include="Source\Parameters.h" />
     <ClInclude Include="Source\ParamInt.h" />
+    <ClInclude Include="Source\ParamListCore.h" />
     <ClInclude Include="Source\ParamList.h" />
     <ClInclude Include="Source\ParamRegister.h" />
     <ClInclude Include="Source\ParamString.h" />
@@ -2006,6 +2008,7 @@
     <ClInclude Include="Source\RSSML0x.h" />
     <ClInclude Include="Source\RunProgressDlg.h" />
     <ClInclude Include="Source\Sequence.h" />
+    <ClInclude Include="Source\SequenceImplementationIncludes.h" />
     <ClInclude Include="Source\SequenceLib.h" />
     <ClInclude Include="Source\SequenceList.h" />
     <ClInclude Include="Source\SequenceListAnalogOut.h" />

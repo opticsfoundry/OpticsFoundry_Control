@@ -7,7 +7,7 @@
 #include "clntsock.h"
 #include "lstnsock.h"
 #include "ExecuteMeasurementDlg.h"
-#include "ParamList.h"
+#include "ParamListCore.h"
 #include "SystemParamList.h"
 #include "Control.h"
 

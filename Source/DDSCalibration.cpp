@@ -8,7 +8,6 @@
 #include <math.h>
 #include <fstream>
 using namespace std;
-#include "IOList.h"
 #include "StepwiseLinearCalibration.h"
 
 #ifdef _DEBUG

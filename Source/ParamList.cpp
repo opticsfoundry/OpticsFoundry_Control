@@ -15,6 +15,8 @@
 #include ".\paramlist.h"
 #include "color.h"
 #include "ParamList_shortcuts_auto_created.h"
+#include "Output.h"
+#include "IORegister.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -32,6 +34,13 @@ CParamList::CParamList() {
 	EvaporationSweep = new CEvaporationSweep();
 }
 
+bool CParamList::AssembleSequence() {
+	if (Output) {
+		return Output->IsInAssembleSequenceListMode();
+	}
+	return false;
+}
+
 void CParamList::Initialize() {
 	AssemblingParamList=true;
 	SecuritySignStatus=Off;
@@ -41,7 +50,7 @@ void CParamList::Initialize() {
 	DDSAD9858Units.Format("%.0f..0dB",DDSAD9858AttenuationMax);
 	CString AnalogAttenuationUnits;
 	AnalogAttenuationUnits.Format("%.0f..0dB",AnalogAttenuationMax);
-	
+
 	Pi=2.0*asin(1.0);
 
 	Sequence->InitializeSystem();
@@ -49,7 +58,7 @@ void CParamList::Initialize() {
 
 
 NewMenu("", IDM_MENU_0);
-NewMenu("Preparation stage (direct mode)",IDM_MENU_0);		
+NewMenu("Preparation stage (direct mode)",IDM_MENU_0);
 	RegisterString(ExperimentalRunName, "ExperimentalRunName", "Experimental run", 200, "Experimental run name");
 	RegisterLong(&StabilityRunParameter, "StabilityRunParameter", 0, 100000, "Stability Run Parameter", "");
 	//RegisterBool(&UseControlAPIToRunSequence, "UseControlAPIToRunSequence", "Use Control API to run sequence?");
@@ -63,17 +72,17 @@ NewMenu("Preparation stage (direct mode)",IDM_MENU_0);
 
 	RegisterDouble(&PreparationTime,"PreparationTime",0,100000,"Preparation Time","ms");
 	RegisterBool(&StartWithRb, "StartWithRb", "Start with Rb ?");
-	RegisterBool(&DoFluorescenceStoppedLoading,"DoFluorescenceStoppedLoading","Fluorescence Stopped Loading ?","F");	
+	RegisterBool(&DoFluorescenceStoppedLoading,"DoFluorescenceStoppedLoading","Fluorescence Stopped Loading ?","F");
 	RegisterBool(&DoFluoOffsetCalibrationLoading,"DoFluoOffsetCalibrationLoading","Fluo Offset Calibration Loading?");
-	RegisterBool(&UseHardwareThresholdCircuit,"UseHardwareThresholdCircuit","Use Hardware Threshold Circuit ?");	
+	RegisterBool(&UseHardwareThresholdCircuit,"UseHardwareThresholdCircuit","Use Hardware Threshold Circuit ?");
 	RegisterDouble(&FluorescenceStartVoltageOffset,"FluorescenceStartVoltageOffset",0,10,"Fluorescence Start Voltage Offset","V");
-	RegisterDouble(&FluorescenceThresholdVoltage,"FluorescenceThresholdVoltage",0,10,"Fluorescence Threshold Voltage","V");	
+	RegisterDouble(&FluorescenceThresholdVoltage,"FluorescenceThresholdVoltage",0,10,"Fluorescence Threshold Voltage","V");
 	RegisterDouble(&MaxFluoMOTLoadingTime,"MaxFluoMOTLoadingTime",0,300000,"Max Fluo MOT loading time","ms","Maximum loading time if fluorescence stopped loading is used.\nMake it long (~10s) so that loading stops by fluorescence count and not by timeout.");
 	RegisterDouble(&FluoMOTEmptyPulseFiberIntensity,"FluoMOTEmptyPulseFiberIntensity",0,100,"Fluo MOT Empty Fiber Intensity","%");
-	RegisterDouble(&FluoMOTEmptyPulseTime,"FluoMOTEmptyPulseTime",0,100000,"Fluo MOT Empty Time","ms");	
-	
+	RegisterDouble(&FluoMOTEmptyPulseTime,"FluoMOTEmptyPulseTime",0,100000,"Fluo MOT Empty Time","ms");
+
 	RegisterBool(&DoLoadSecondIsotope,"DoLoadSecondIsotope","Load Second Isotope ?","2");
-	RegisterDouble(&LoadSecondIsotopeMOTLoadingTime,"LoadSecondIsotopeMOTLoadingTime",0,100000,"MOT loading time","ms");	
+	RegisterDouble(&LoadSecondIsotopeMOTLoadingTime,"LoadSecondIsotopeMOTLoadingTime",0,100000,"MOT loading time","ms");
 
 
 
@@ -81,25 +90,25 @@ NewMenu("Preparation stage (direct mode)",IDM_MENU_0);
 
 	Sequence->MainExperimentalSequenceEndInDirectOutputMode();
 
-	RegisterDouble(&EndOfRunWait,"EndOfRunWait",0,10000,"EndOfRunWait","ms");	
-	RegisterBool(&SendSupplementaryDataToVisionAfterRun,"SendSupplementaryDataToVisionAfterRun","Send Supplementary Data To Vision After Run","VS");	
-	RegisterBool(&DoResetSystemAfterRun,"DoResetSystemAfterRun","Reset System After Run","RS");	
-	RegisterBool(&DoHardResetRedDDSafterRun,"DoHardResetRedDDSafterRun","Hard Reset RED DDS  After Run","RS");	
-//	RegisterBool(&ResetSystemMOTType,"ResetSystemMOTType","Reset System MOT Type","RSMT");	
-	RegisterBool(&ShutDownCoilsAfterRun,"ShutDownCoilsAfterRun","Shut Down Coils After Run","RL");	
-	RegisterBool(&LockSrRepumpEnableLockAfterRun,"LockSrRepumpEnableLockAfterRun","Enable Repump Lock After Run","RL");	
+	RegisterDouble(&EndOfRunWait,"EndOfRunWait",0,10000,"EndOfRunWait","ms");
+	RegisterBool(&SendSupplementaryDataToVisionAfterRun,"SendSupplementaryDataToVisionAfterRun","Send Supplementary Data To Vision After Run","VS");
+	RegisterBool(&DoResetSystemAfterRun,"DoResetSystemAfterRun","Reset System After Run","RS");
+	RegisterBool(&DoHardResetRedDDSafterRun,"DoHardResetRedDDSafterRun","Hard Reset RED DDS  After Run","RS");
+//	RegisterBool(&ResetSystemMOTType,"ResetSystemMOTType","Reset System MOT Type","RSMT");
+	RegisterBool(&ShutDownCoilsAfterRun,"ShutDownCoilsAfterRun","Shut Down Coils After Run","RL");
+	RegisterBool(&LockSrRepumpEnableLockAfterRun,"LockSrRepumpEnableLockAfterRun","Enable Repump Lock After Run","RL");
 
-	RegisterBool(&DoReadoutKeithleyMultimeter,"DoReadoutKeithleyMultimeter","Readout Keithley Multimeter ?","K");	
-	
-	RegisterBool(&DoTransmittAtomnumberToAnalogOutPort,"DoTransmittAtomnumberToAnalogOutPort","Write atomnumber to analog out port ?","TN");	
-	RegisterDouble(&TransmittAtomnumberCalibration,"TransmittAtomnumberCalibration",0,10000,"Atomnumber Calibration","10^3/V");	
-	
+	RegisterBool(&DoReadoutKeithleyMultimeter,"DoReadoutKeithleyMultimeter","Readout Keithley Multimeter ?","K");
+
+	RegisterBool(&DoTransmittAtomnumberToAnalogOutPort,"DoTransmittAtomnumberToAnalogOutPort","Write atomnumber to analog out port ?","TN");
+	RegisterDouble(&TransmittAtomnumberCalibration,"TransmittAtomnumberCalibration",0,10000,"Atomnumber Calibration","10^3/V");
+
 	RegisterBool(&DoAdaptFrequenciesToBField,"DoAdaptFrequenciesToBField","Adapt Frequencies To B Field","A");
-	RegisterLong(&AdaptFrequenciesToBFieldFeshbachRampNr,"AdaptFrequenciesToBFieldFeshbachRampNr",0,NrFeshbachFieldRamps,"Feshbach Ramp Nr","#","Number of Feshbach ramp at the end of which the image taking magnetic field is reached.");	
+	RegisterLong(&AdaptFrequenciesToBFieldFeshbachRampNr,"AdaptFrequenciesToBFieldFeshbachRampNr",0,NrFeshbachFieldRamps,"Feshbach Ramp Nr","#","Number of Feshbach ramp at the end of which the image taking magnetic field is reached.");
 	RegisterLong(&AdaptFrequenciesToBFieldSrFlashNr,"AdaptFrequenciesToBFieldSrFlashNr",0,NrFlashTypes,"Sr Flash Nr","#","Number of Sr flash used to adapt frequency.");
-	RegisterDouble(&AdaptFrequenciesToBFieldCurrent0,"AdaptFrequenciesToBFieldCurrent0",0,1000,"Current 0","A");	
-	RegisterDouble(&AdaptFrequenciesToBFieldFrequency0,"AdaptFrequenciesToBFieldFrequency0",0,1000,"Frequency at current 0","MHz");	
-	RegisterDouble(&AdaptFrequenciesToBFieldCurrent1,"AdaptFrequenciesToBFieldCurrent1",0,1000,"Current 1","A");	
+	RegisterDouble(&AdaptFrequenciesToBFieldCurrent0,"AdaptFrequenciesToBFieldCurrent0",0,1000,"Current 0","A");
+	RegisterDouble(&AdaptFrequenciesToBFieldFrequency0,"AdaptFrequenciesToBFieldFrequency0",0,1000,"Frequency at current 0","MHz");
+	RegisterDouble(&AdaptFrequenciesToBFieldCurrent1,"AdaptFrequenciesToBFieldCurrent1",0,1000,"Current 1","A");
 	RegisterDouble(&AdaptFrequenciesToBFieldFrequency1,"AdaptFrequenciesToBFieldFrequency1",0,1000,"Frequency at current 1","MHz");
 
 
@@ -107,9 +116,9 @@ NewMenu("Preparation stage (direct mode)",IDM_MENU_0);
 
 
 	//NewMenu("General information",0,1);  //status parameters, not send to Vision, but saved on disk and displayed
-	
+
 	NewMenu("End of Menu",0,2/* 0=normal 1=status parameters 2=hidden parameters*/);//hidden parameters, not shown, not send to Vision, but saved on disk
-	//for (int i=0;i<NrOvenTemperatures;i++) RegisterDouble(&SetOvenTemp[i],"SetOvenTemp"+itos(i),0,1024,"SetOvenTemp"+itos(i),"°C");	
+	//for (int i=0;i<NrOvenTemperatures;i++) RegisterDouble(&SetOvenTemp[i],"SetOvenTemp"+itos(i),0,1024,"SetOvenTemp"+itos(i),"°C");
 	RegisterLong(&ImagingSystemConfigurationUsed,"ImagingSystemConfigurationUsed",0,1,"imaging system configuration","");
 	RegisterLong(&CyclicOperationUnimessNr,"CyclicOperationUnimessNr",0,1000,"CyclicOperationUnimessNr","");
 	RegisterLong(&CyclicOperationCommandNr,"CyclicOperationCommandNr",0,1000,"CyclicOperationCommandNr","");
@@ -117,7 +126,7 @@ NewMenu("Preparation stage (direct mode)",IDM_MENU_0);
 	StopAdding();
 }
 
-void CParamList::AddSrFlashType(int FlashNr, bool AQuRAImaging1, bool AQuRAImaging2, bool AQuRAImaging3, bool blueAOM1, bool blueAOM2, bool redAOM, bool dipTrapAOM) {	
+void CParamList::AddSrFlashType(int FlashNr, bool AQuRAImaging1, bool AQuRAImaging2, bool AQuRAImaging3, bool blueAOM1, bool blueAOM2, bool redAOM, bool dipTrapAOM) {
 	if (FlashNr>NrFlashTypes) {
 		ControlMessageBox("CSequence::AddSrFlashType : increase NrFlashTypes");
 		return;
@@ -129,31 +138,31 @@ void CParamList::AddSrFlashType(int FlashNr, bool AQuRAImaging1, bool AQuRAImagi
 	ImagingFlashUseblueAOM2[FlashNr]=blueAOM2;
 	ImagingFlashUseredAOM[FlashNr]=redAOM;
 	ImagingFlashUseDipTrapAOM[FlashNr]=dipTrapAOM;
-	RegisterString(SrImagingFlashNameOfFlash[FlashNr],"SrImagingFlashNameOfFlash"+itos(FlashNr),"Imaging Flash",200,"Description of Sr Flash "+itos(FlashNr), "",ColorSrBlue);	
+	RegisterString(SrImagingFlashNameOfFlash[FlashNr],"SrImagingFlashNameOfFlash"+itos(FlashNr),"Imaging Flash",200,"Description of Sr Flash "+itos(FlashNr), "",ColorSrBlue);
 	if (AQuRAImaging1) {
 		RegisterDouble(&AQuRAImagingAOM1FrequencyOfFlash[FlashNr],"AQuRAImagingAOM1FrequencyOfFlash"+itos(FlashNr),150,240,"AQuRA            Imaging AOM1 (Blue 1 & 2) Frequency","MHz");
-		RegisterDouble(&AQuRAImagingAOM1IntensityOfFlash[FlashNr],"AQuRAImagingAOM1IntensityOfFlash"+itos(FlashNr),0,100,"AQuRA Imaging AOM1 (Blue 1 & 2) Intensity","%");				
+		RegisterDouble(&AQuRAImagingAOM1IntensityOfFlash[FlashNr],"AQuRAImagingAOM1IntensityOfFlash"+itos(FlashNr),0,100,"AQuRA Imaging AOM1 (Blue 1 & 2) Intensity","%");
 	} else {
 		AQuRAImagingAOM1FrequencyOfFlash[FlashNr]=200;
 		AQuRAImagingAOM1IntensityOfFlash[FlashNr]=0;
 	}
 	if (AQuRAImaging2) { // Red AQuRA Imaging
 		RegisterDouble(&AQuRAImagingAOM3FrequencyOfFlash[FlashNr],"AQuRAImagingAOM3FrequencyOfFlash"+itos(FlashNr),70,95,"AQuRA Imaging AOM3 (Red) Frequency","MHz");
-		RegisterDouble(&AQuRAImagingAOM3IntensityOfFlash[FlashNr],"AQuRAImagingAOM3IntensityOfFlash"+itos(FlashNr),0,100,"AQuRA Imaging AOM3 (Red) Intensity","%");				
+		RegisterDouble(&AQuRAImagingAOM3IntensityOfFlash[FlashNr],"AQuRAImagingAOM3IntensityOfFlash"+itos(FlashNr),0,100,"AQuRA Imaging AOM3 (Red) Intensity","%");
 	} else {
 		AQuRAImagingAOM3FrequencyOfFlash[FlashNr]=80;
 		AQuRAImagingAOM3IntensityOfFlash[FlashNr]=0;
 	}
 	if (AQuRAImaging3) { // This is the HP Blue Imaging
 		RegisterDouble(&AQuRAImagingAOM4FrequencyOfFlash[FlashNr],"AQuRAImagingAOM4FrequencyOfFlash"+itos(FlashNr),160,240,"AQuRA Imaging AOM4 (HP Blue) Frequency","MHz");
-		RegisterDouble(&AQuRAImagingAOM4IntensityOfFlash[FlashNr],"AQuRAImagingAOM4IntensityOfFlash"+itos(FlashNr),0,100,"AQuRA Imaging AOM4 (HP Blue) Intensity","%");				
+		RegisterDouble(&AQuRAImagingAOM4IntensityOfFlash[FlashNr],"AQuRAImagingAOM4IntensityOfFlash"+itos(FlashNr),0,100,"AQuRA Imaging AOM4 (HP Blue) Intensity","%");
 	} else {
 		AQuRAImagingAOM4FrequencyOfFlash[FlashNr]=200;
 		AQuRAImagingAOM4IntensityOfFlash[FlashNr]=0;
 	}
 	if (blueAOM1) {
 		RegisterDouble(&SrImaging1DPAOMFrequencyOfFlash[FlashNr],"SrImaging1DPAOMFrequencyOfFlash"+itos(FlashNr),90,130,"Sr Imaging 1 AOM Frequency","MHz");
-		RegisterDouble(&SrImaging1DPAOMIntensityOfFlash[FlashNr],"SrImaging1DPAOMIntensityOfFlash"+itos(FlashNr),0,100,"Sr Imaging 1 AOM Intensity","%");				
+		RegisterDouble(&SrImaging1DPAOMIntensityOfFlash[FlashNr],"SrImaging1DPAOMIntensityOfFlash"+itos(FlashNr),0,100,"Sr Imaging 1 AOM Intensity","%");
 	} else {
 		SrImaging1DPAOMFrequencyOfFlash[FlashNr]=110;
 		SrImaging1DPAOMIntensityOfFlash[FlashNr]=0;
@@ -164,11 +173,11 @@ void CParamList::AddSrFlashType(int FlashNr, bool AQuRAImaging1, bool AQuRAImagi
 	} else {
 		SrImaging2DPAOMFrequencyOfFlash[FlashNr]=200;
 		SrImaging2DPAOMIntensityOfFlash[FlashNr]=0;
-	}	
-	if (redAOM) {		
+	}
+	if (redAOM) {
 		RegisterLong(&ImagingFlashRedType[FlashNr],"ImagingFlashRedType"+itos(FlashNr),0,3,"Red Flash laser source","0..3","0: omnibus slave 1\n1: red MOT slave 1\n2: red MOT slave 2\n3: red MOT slave 3");
 		RegisterDouble(&ImagingFlashRedAOMFrequencyOfFlash[FlashNr],"ImagingFlashRedAOMFrequencyOfFlash"+itos(FlashNr),60,260,"Red Imaging AOM Frequency","MHz");
-		RegisterDouble(&ImagingFlashRedAOMIntensityOfFlash[FlashNr],"ImagingFlashRedAOMIntensityOfFlash"+itos(FlashNr),0,100,"Red Imaging AOM Intensity","%");		
+		RegisterDouble(&ImagingFlashRedAOMIntensityOfFlash[FlashNr],"ImagingFlashRedAOMIntensityOfFlash"+itos(FlashNr),0,100,"Red Imaging AOM Intensity","%");
 	} else {
 		ImagingFlashRedType[FlashNr]=0;
 		ImagingFlashRedAOMFrequencyOfFlash[FlashNr]=200;
@@ -178,14 +187,14 @@ void CParamList::AddSrFlashType(int FlashNr, bool AQuRAImaging1, bool AQuRAImagi
 
 	} else {
 
-	}	
-	RegisterDouble(&SrAbsImageFlashRelativeIntensityReferenceFKS[FlashNr],"SrAbsImageFlashRelativeIntensityReferenceFKS"+itos(FlashNr),0.01,10,"Relative Intensity reference flash FKS","");					
-	RegisterDouble(&SrAbsImageFlashRelativeIntensityReferenceNormal[FlashNr],"SrAbsImageFlashRelativeIntensityReferenceNormal"+itos(FlashNr),0.01,10,"Relative Intensity reference flash Normal","");					
-	RegisterDouble(&SrAbsImageFlashDurationOfFlash[FlashNr],"SrAbsImageFlashDurationOfFlash"+itos(FlashNr),0,1000,"Duration Probe","ms");				
-	//AddStatic("");		
+	}
+	RegisterDouble(&SrAbsImageFlashRelativeIntensityReferenceFKS[FlashNr],"SrAbsImageFlashRelativeIntensityReferenceFKS"+itos(FlashNr),0.01,10,"Relative Intensity reference flash FKS","");
+	RegisterDouble(&SrAbsImageFlashRelativeIntensityReferenceNormal[FlashNr],"SrAbsImageFlashRelativeIntensityReferenceNormal"+itos(FlashNr),0.01,10,"Relative Intensity reference flash Normal","");
+	RegisterDouble(&SrAbsImageFlashDurationOfFlash[FlashNr],"SrAbsImageFlashDurationOfFlash"+itos(FlashNr),0,1000,"Duration Probe","ms");
+	//AddStatic("");
 }
 
-void CParamList::AddIsotopeConfiguration(int IsotopeConfigurationNr) {	
+void CParamList::AddIsotopeConfiguration(int IsotopeConfigurationNr) {
 	if (IsotopeConfigurationNr>NrAQuRAIsotopeConfigurationTypes) {
 		ControlMessageBox("CSequence::AddIsotopeConfiguration : increase NrAQuRAIsotopeConfigurationTypes");
 		return;
@@ -202,10 +211,10 @@ void CParamList::AddIsotopeConfiguration(int IsotopeConfigurationNr) {
 
 	RegisterDouble(&AQuRAIsotopeConfiguration86AOMFrequency[IsotopeConfigurationNr],"AQuRAIsotopeConfiguration86AOMFrequency"+itos(IsotopeConfigurationNr),0,240,"86 Isotope AOM frequency","MHz");
 	RegisterDouble(&AQuRAIsotopeConfiguration86AOMIntensity[IsotopeConfigurationNr],"AQuRAIsotopeConfiguration86AOMIntensity"+itos(IsotopeConfigurationNr),0,100,"86 Isotope AOM Intensity","%");
-		
+
 	RegisterDouble(&AQuRAIsotopeConfiguration87_9_2AOMFrequency[IsotopeConfigurationNr],"AQuRAIsotopeConfiguration87_9_2AOMFrequency"+itos(IsotopeConfigurationNr),0,240,"87 Isotope AOM 9/2 frequency","MHz");
 	RegisterDouble(&AQuRAIsotopeConfiguration87_9_2AOMIntensity[IsotopeConfigurationNr],"AQuRAIsotopeConfiguration87_9_2AOMIntensity"+itos(IsotopeConfigurationNr),0,100,"87 Isotope AOM 9/2 Intensity","%");
-	
+
 	RegisterDouble(&AQuRAIsotopeConfiguration87_11_2AOM_1_Frequency[IsotopeConfigurationNr],"AQuRAIsotopeConfiguration87_11_2AOM_1_Frequency"+itos(IsotopeConfigurationNr),0,425,"87 Isotope AOM_1  11/2 frequency","MHz");
 	RegisterDouble(&AQuRAIsotopeConfiguration87_11_2AOM_1_Intensity[IsotopeConfigurationNr],"AQuRAIsotopeConfiguration87_11_2AOM_1_Intensity"+itos(IsotopeConfigurationNr),0,100,"87 Isotope AOM_1  11/2 Intensity","%");
 
@@ -214,12 +223,12 @@ void CParamList::AddIsotopeConfiguration(int IsotopeConfigurationNr) {
 	AddStatic("");
 }
 
-void CParamList::AddBlowAwayFlash(int FlashNr) {	
+void CParamList::AddBlowAwayFlash(int FlashNr) {
 	if (FlashNr>NrFlashTypes) {
 		ControlMessageBox("CSequence::AddBAFlashType : increase NrFlashTypes");
 		return;
 	}
-	RegisterString(BAImagingFlashNameOfFlash[FlashNr],"BAImagingFlashNameOfFlash"+itos(FlashNr),"Blow Away Flash",200,"Description of Blow Away Flash "+itos(FlashNr), "",ColorSrBlue);	
+	RegisterString(BAImagingFlashNameOfFlash[FlashNr],"BAImagingFlashNameOfFlash"+itos(FlashNr),"Blow Away Flash",200,"Description of Blow Away Flash "+itos(FlashNr), "",ColorSrBlue);
 
 	RegisterBool(&AQuRABlowAwayMOTYOpenShutter[FlashNr],"AQuRABlowAwayMOTYOpenShutter"+itos(FlashNr),"Open MOTY Shutter?");
 	RegisterBool(&AQuRABlowAwayTransparency1OpenShutter[FlashNr],"AQuRABlowAwayTransparency1OpenShutter"+itos(FlashNr),"Open Transparency beam Shutter?");
@@ -275,7 +284,7 @@ void CParamList::AddBlowAwayFlash(int FlashNr) {
 	RegisterDouble(&AQuRABlowAway707AOM1FlashPostTime[FlashNr],"AQuRABlowAway707AOM1FlashPostTime"+itos(FlashNr),0,1000,"AQuRA Blow Away 707 AOM1 Flash Post Time","ms");
 	RegisterDouble(&AQuRABlowAway707AOM1PostFlashFrequency[FlashNr],"AQuRABlowAway707AOM1PostFlashFrequency"+itos(FlashNr),180,220,"AQuRA Blow Away 707 AOM1 After Flash Frequency","MHz");
 	RegisterDouble(&AQuRABlowAway707AOM1PostFlashIntensity[FlashNr],"AQuRABlowAway707AOM1PostFlashIntensity"+itos(FlashNr),0,100,"AQuRA Blow Away 707 AOM1 After Flash Intensity","%");
-	
+
 	RegisterBool(&AQuRABlowAwayMOTYCloseShutter[FlashNr],"AQuRABlowAwayMOTYCloseShutter"+itos(FlashNr),"Close MOTY Shutter?");
 	RegisterBool(&AQuRABlowAwayTransparency1CloseShutter[FlashNr],"AQuRABlowAwayTransparency1CloseShutter"+itos(FlashNr),"Close Transparency beam Shutter?");
 	RegisterBool(&AQuRABlowAwayRepumpCloseShutter[FlashNr],"AQuRABlowAwayRepumpCloseShutter"+itos(FlashNr),"Close Transparency Repump Shutter?");
@@ -286,21 +295,21 @@ void CParamList::AddBlowAwayFlash(int FlashNr) {
 
 }
 
-void CParamList::AddRbFlashType(int FlashNr) {	
+void CParamList::AddRbFlashType(int FlashNr) {
 	if (FlashNr>NrFlashTypes) {
 		ControlMessageBox("CSequence::AddRbFlashType : increase NrFlashTypes");
 		return;
 	}
-	RegisterString(RbImagingFlashNameOfFlash[FlashNr],"RbImagingFlashNameOfFlash"+itos(FlashNr),"Imaging Flash",200,"Description of Rb Flash "+itos(FlashNr), "",ColorRb);	
+	RegisterString(RbImagingFlashNameOfFlash[FlashNr],"RbImagingFlashNameOfFlash"+itos(FlashNr),"Imaging Flash",200,"Description of Rb Flash "+itos(FlashNr), "",ColorRb);
 	RegisterDouble(&RbImage1DPAOMA4FrequencyOfFlash[FlashNr],"RbImage1DPAOMA4Frequency"+itos(FlashNr),160,240,"Image 1 DP AOM A4 Frequency","MHz");
 	RegisterDouble(&RbImage1DPAOMA4IntensityOfFlash[FlashNr],"RbImage1DPAOMA4Intensity"+itos(FlashNr),0,100,"Image 1 DP AOM A4 Intensity","0..100%");
 	RegisterDouble(&RbImage2SPAOMA5FrequencyOfFlash[FlashNr],"RbImage2SPAOMA5Frequency"+itos(FlashNr),65,95,"Image 2 SP AOM A5 Frequency","MHz");
 	RegisterDouble(&RbImage2SPAOMA5IntensityOfFlash[FlashNr],"RbImage2SPAOMA5Intensity"+itos(FlashNr),0,100,"Image 2 SP AOM A5 Intensity","0..100%");
 	RegisterDouble(&RbRepumpDPAOMB2FrequencyOfFlash[FlashNr],"RbRepumpDPAOMB2Frequency"+itos(FlashNr),90,120,"Repumper DP AOM B2 Frequency","MHz");
 	RegisterDouble(&RbRepumpDPAOMB2IntensityOfFlash[FlashNr],"RbRepumpDPAOMB2Intensity"+itos(FlashNr),0,100,"Repumper DP AOM B2 Intensity","0..100%");
-	RegisterDouble(&RbAbsImageFlashRelativeIntensityReferenceFKS[FlashNr],"RbAbsImageFlashRelativeIntensityReferenceFKS"+itos(FlashNr),0.1,10,"Relative Intensity reference flash FKS","");					
-	RegisterDouble(&RbAbsImageFlashRelativeIntensityReferenceNormal[FlashNr],"RbAbsImageFlashRelativeIntensityReferenceNormal"+itos(FlashNr),0.1,10,"Relative Intensity reference flash Normal","");					
-	RegisterDouble(&RbAbsImageFlashDurationOfFlash[FlashNr],"RbAbsImageFlashDurationOfFlash"+itos(FlashNr),0,1000,"Duration Probe","ms");		
+	RegisterDouble(&RbAbsImageFlashRelativeIntensityReferenceFKS[FlashNr],"RbAbsImageFlashRelativeIntensityReferenceFKS"+itos(FlashNr),0.1,10,"Relative Intensity reference flash FKS","");
+	RegisterDouble(&RbAbsImageFlashRelativeIntensityReferenceNormal[FlashNr],"RbAbsImageFlashRelativeIntensityReferenceNormal"+itos(FlashNr),0.1,10,"Relative Intensity reference flash Normal","");
+	RegisterDouble(&RbAbsImageFlashDurationOfFlash[FlashNr],"RbAbsImageFlashDurationOfFlash"+itos(FlashNr),0,1000,"Duration Probe","ms");
 }
 
 bool DoPictureParameters;
@@ -308,26 +317,26 @@ void CParamList::AddTakePicture() {
 	if (AssembleSequence()) { Sequence->TakePicture(); return; }
 	//NewMenu("Imaging");
 	StartGroupBox("Image type");
-	RegisterBool(&DoTakeNoPicture,"DoTakeNoPicture","Don't take a Picture","NP",IDB_RADIO);	
-	RegisterBool(&DoTakeFluorescencePicture,"DoTakeFluorescencePicture","Take Fluorescence Picture","FP",IDB_RADIO);	
-	RegisterBool(&DoTakeAbsorptionPicture,"DoTakeAbsorptionPicture","Take Absorption Picture","AP",IDB_RADIO);	
+	RegisterBool(&DoTakeNoPicture,"DoTakeNoPicture","Don't take a Picture","NP",IDB_RADIO);
+	RegisterBool(&DoTakeFluorescencePicture,"DoTakeFluorescencePicture","Take Fluorescence Picture","FP",IDB_RADIO);
+	RegisterBool(&DoTakeAbsorptionPicture,"DoTakeAbsorptionPicture","Take Absorption Picture","AP",IDB_RADIO);
 	RegisterBool(&DoTakeFKSAbsorptionPicture,"DoTakeFKSAbsorptionPicture","Take FKS Absorption Picture","FAP",IDB_RADIO);
-	StopGroupBox();	
+	StopGroupBox();
 
 	RegisterBool(&DoPictureParameters,"DoPictureParameters","Picture Parameters","P");
 	RegisterBool(&AbsPicturePrepareShutters,"AbsPicturePrepareShutters","Prepare Shutters");
-	RegisterBool(&AbsPictureLeaveLeaveDipoleTrapOn,"AbsPictureLeaveLeaveDipoleTrapOn","Leave Dipole Trap On");		
-	RegisterBool(&AbsPictureLeaveTranspOn,"AbsPictureLeaveTransparencyOn","Leave Transparency On");		
-	RegisterBool(&AbsPictureLeaveZITCTranspOn,"AbsPictureLeaveZITCTranspOn","Leave ZITC On");		
-	RegisterBool(&AbsPictureLeaveSOLDOn,"AbsPictureLeaveSOLDOn","Leave SOLD On");		
-	RegisterBool(&AbsPictureLeaveRepumpTranspOn,"AbsPictureLeaveRepumpTransparencyOn","Leave Repump Transp On");		
-	RegisterBool(&AbsPictureLeaveLeaveDipoleTrapFreq,"AbsPictureLeaveLeaveDipoleTrapFreq","Don't Fully Switch off Dipole Trap");		
-	RegisterBool(&UseDipoleTrapBeamForImaging,"UseDipoleTrapBeamForImaging","Use dip trap beam imaging");//,"",IDB_RADIO);	
+	RegisterBool(&AbsPictureLeaveLeaveDipoleTrapOn,"AbsPictureLeaveLeaveDipoleTrapOn","Leave Dipole Trap On");
+	RegisterBool(&AbsPictureLeaveTranspOn,"AbsPictureLeaveTransparencyOn","Leave Transparency On");
+	RegisterBool(&AbsPictureLeaveZITCTranspOn,"AbsPictureLeaveZITCTranspOn","Leave ZITC On");
+	RegisterBool(&AbsPictureLeaveSOLDOn,"AbsPictureLeaveSOLDOn","Leave SOLD On");
+	RegisterBool(&AbsPictureLeaveRepumpTranspOn,"AbsPictureLeaveRepumpTransparencyOn","Leave Repump Transp On");
+	RegisterBool(&AbsPictureLeaveLeaveDipoleTrapFreq,"AbsPictureLeaveLeaveDipoleTrapFreq","Don't Fully Switch off Dipole Trap");
+	RegisterBool(&UseDipoleTrapBeamForImaging,"UseDipoleTrapBeamForImaging","Use dip trap beam imaging");//,"",IDB_RADIO);
 	RegisterBool(&AbsPictureLeaveMOTOn,"AbsPictureLeaveMOTOn","Leave MOT On");
 	RegisterBool(&AbsPictureSwitchMOTBackOn, "AbsPictureSwitchMOTBackOn", "Switch MOT back on");
 	RegisterDouble(&DipoleTrapOffPowerSetpoint, "DipoleTrapOffPowerSetpoint",0,100, "Dipole Trap Off Power Setpoint","%");
 
-	
+
 
 	AddStatic("");
 	AddStatic("AQuRA Imaging Parameters:");
@@ -341,8 +350,8 @@ void CParamList::AddTakePicture() {
 
 	RegisterBool(&AbsPictureLeaveAQuRABlueMOT,"AbsPictureLeaveAQuRABlueMOT","Leave AQuRA Blue MOT Light On");
 	RegisterBool(&AbsPictureLeaveAQuRABlueMOTRepump,"AbsPictureLeaveAQuRABlueMOTRepump","Leave AQuRA Blue MOT Repump (679/707) Light On");
-	RegisterBool(&AbsPictureLeaveAQuRARed2DMOT,"AbsPictureLeaveAQuRARed2DMOT","Leave AQuRA Red 2D MOT Light On");	
-	RegisterBool(&AbsPictureLeaveAQuRARed3DMOT,"AbsPictureLeaveAQuRARed3DMOT","Leave AQuRA Red 3D MOT Light On");	
+	RegisterBool(&AbsPictureLeaveAQuRARed2DMOT,"AbsPictureLeaveAQuRARed2DMOT","Leave AQuRA Red 2D MOT Light On");
+	RegisterBool(&AbsPictureLeaveAQuRARed3DMOT,"AbsPictureLeaveAQuRARed3DMOT","Leave AQuRA Red 3D MOT Light On");
 
 
 	AddStatic("");
@@ -350,7 +359,7 @@ void CParamList::AddTakePicture() {
 	RegisterDouble(&RbEarthCompXImagingField,"RbEarthXImagingField",0,12,"Earth Comp X Imaging Current","A");
 	RegisterDouble(&RbEarthCompYImagingField,"RbEarthYImagingField",0,12,"Earth Comp Y Imaging Current","A");
 	RegisterDouble(&RbEarthCompZImagingField,"RbEarthZImagingField",0,12,"Earth Comp Z Imaging Current","A");
-	RegisterBool(&AbsPictureRbRepumpPulseJustBeforeImaging,"AbsPictureRbRepumpPulseJustBeforeImaging","Pulse Rb repump a bit before imaging");	
+	RegisterBool(&AbsPictureRbRepumpPulseJustBeforeImaging,"AbsPictureRbRepumpPulseJustBeforeImaging","Pulse Rb repump a bit before imaging");
 	RegisterDouble(&RbRepumpTimeBeforeImaging,"RbRepumpTimeBeforeImaging",0,24,"Rb repump pulse time before imaging","ms");
 	RegisterDouble(&RbRepumpImagingPulseDuration,"RbRepumpImagingPulseDuration",0,10,"Rb repump pulse duration before imaging","ms");
 	RegisterDouble(&RbRepumpImagingPulseFrequency,"RbRepumpImagingPulseFrequency",90,110,"Rb repump pulse frequency before imaging","MHz");
@@ -360,24 +369,24 @@ void CParamList::AddTakePicture() {
 	AddStatic("");
 	NewMenu("Imaging parameters menu 2");
 	AddStatic("Magnetic Stern and Gerlach Parameters:");
-	RegisterBool(&AbsPictureLeaveFieldsOn,"AbsPictureLeaveFieldsOn","Leave Fields On");	
-	RegisterBool(&AbsPictureSwitchOffFieldJustBeforeImaging,"AbsPictureSwitchOffFieldJustBeforeImaging","Switch field a bit before imaging");	
+	RegisterBool(&AbsPictureLeaveFieldsOn,"AbsPictureLeaveFieldsOn","Leave Fields On");
+	RegisterBool(&AbsPictureSwitchOffFieldJustBeforeImaging,"AbsPictureSwitchOffFieldJustBeforeImaging","Switch field a bit before imaging");
 	RegisterDouble(&FieldSwitchingTimeBeforeImaging,"FieldSwitchingTimeBeforeImaging",0,24,"Switch field time before imaging","ms");
 
 	AddStatic("");
-	AddStatic("Expansion times and species:");	
+	AddStatic("Expansion times and species:");
 	RegisterDouble(&InitialExpansionTime,"InitialExpansionTime",0,1000,"Initial Expansion Time","ms");
 	RegisterDouble(&FKSExpansionTime,"FKSExpansionTime",0,1000,"FKS 2nd image Expansion Time","ms");
 	RegisterBool(&DoFirstFlash,"DoFirstFlash","Do first flash?");
 	for (int i=0;i<NrPicturesMax;i++) {
 		RegisterLong(&ElementOfPicture[i],"ElementOfPicture"+itos(i),0,3,"Element Of Picture "+itos(i),"0:-,1:Sr,2:Rb","0:none, 1:Sr, 2:Rb");
-		RegisterLong(&FlashTypeOfPicture[i],"FlashTypeOfPicture"+itos(i),0,NrFlashTypes,"Flash Type Of Picture "+itos(i),"");		
+		RegisterLong(&FlashTypeOfPicture[i],"FlashTypeOfPicture"+itos(i),0,NrFlashTypes,"Flash Type Of Picture "+itos(i),"");
 		RegisterDouble(&ExpansionTimeOfPicture[i],"ExpansionTimeOfPicture"+itos(i),0,1000,"Additional Expansion Time Of Picture "+itos(i),"ms");
 	}
 
 	AddStatic("");
-	AddStatic("Blow away (see menu 'Probe Flash parameters'):");	
-	RegisterBool(&AQuRADoBlowAway1,"AQuRADoBlowAway1","Do Blow Away 1");	
+	AddStatic("Blow away (see menu 'Probe Flash parameters'):");
+	RegisterBool(&AQuRADoBlowAway1,"AQuRADoBlowAway1","Do Blow Away 1");
 
 	AddStatic("");
 	AddStatic("Cameras:");
@@ -392,16 +401,16 @@ void CParamList::AddTakePicture() {
 
 	AddFlashTypes();
 	AddCameras();
-}	
+}
 
 void CParamList::AddFlashTypes()
 {
-	NewMenu("Probe Flash parameters");	
+	NewMenu("Probe Flash parameters");
 	AddSrFlashType(0,/*blue AQuRA AOM 1*/true,/*blue AQuRA AOM 2*/false,/*blue AQuRA AOM 3*/false,/*blue AOM 1*/false,/*blue AOM 2*/false,/*red AOM*/false,/*dipTrapAOM*/false);
 	AddSrFlashType(1,/*blue AQuRA AOM 1*/false,/*blue AQuRA AOM 2*/true,/*blue AQuRA AOM 3*/false,/*blue AOM 1*/false,/*blue AOM 2*/false,/*red AOM*/false,/*dipTrapAOM*/false);
 	//AddSrFlashType(2,/*blue AQuRA AOM 1*/false,/*blue AQuRA AOM 2*/false,/*blue AQuRA AOM 3*/true,/*blue AOM 1*/false,/*blue AOM 2*/false,/*red AOM*/false,/*dipTrapAOM*/false);
 	//AddSrFlashType(3,/*blue AQuRA AOM 1*/false,/*blue AQuRA AOM 2*/false,/*blue AQuRA AOM 3*/false,/*blue AOM 1*/false,/*blue AOM 2*/false,/*red AOM*/true,/*dipTrapAOM*/false);
-	//AddSrFlashType(4,/*blue AQuRA AOM 1*/false,/*blue AQuRA AOM 2*/false,/*blue AQuRA AOM 3*/false,/*blue AOM 1*/false,/*blue AOM 2*/false,/*red AOM*/true,/*dipTrapAOM*/false);	
+	//AddSrFlashType(4,/*blue AQuRA AOM 1*/false,/*blue AQuRA AOM 2*/false,/*blue AQuRA AOM 3*/false,/*blue AOM 1*/false,/*blue AOM 2*/false,/*red AOM*/true,/*dipTrapAOM*/false);
 	//AddSrFlashType(5,/*blue AQuRA AOM 1*/false,/*blue AQuRA AOM 2*/false,/*blue AQuRA AOM 3*/false,/*blue AOM 1*/false,/*blue AOM 2*/false,/*red AOM*/false,/*dipTrapAOM*/true);
 	//NewColumn();
 	//AddSrFlashType(6,/*blue AQuRA AOM 1*/false,/*blue AQuRA AOM 2*/false,/*blue AQuRA AOM 3*/false,/*blue AOM 1*/true,/*blue AOM 2*/false,/*red AOM*/false,/*dipTrapAOM*/false);
@@ -415,7 +424,7 @@ void CParamList::AddFlashTypes()
 
 
 void CParamList::AddCameras() {
-	
+
 	NewMenu("Camera parameters menu 1");
 	//    const int CameraTypeNr[NrCameras]={1,0,1,1};	 // change camera type Andor:0, PointGrey:1,
 	const int CameraTypeNr[NrCameras] = { 0,0 };// , 1, 1, 1, 1, 1
@@ -513,8 +522,8 @@ void CParamList::AddCameras() {
 			RegisterDouble(&CameraAtomicLinewidth[i],"CameraAtomicLinewidth"+itos(i),0,100,"Linewidth","MHz");
 			RegisterDouble(&CameraAtomicMagneticMoment[i],"CameraAtomicMagneticMoment"+itos(i),-10,10,"Magnetic moment","µB");
 		}
-	
-	
+
+
 	NewMenu("General Camera parameters");
 	//	NewColumn();
 		AddStatic("General camera parameters");
@@ -551,7 +560,7 @@ CParamList::~CParamList()
 }
 
 void CParamList::AdaptMenu0RadioButtonBoxVariables() {
-	
+
 }
 
 CString *ExperimentalRunName;
@@ -587,7 +596,7 @@ double LoadSecondIsotopeMOTLoadingTime;
 
 double StartLoadingTime;
 bool DoReadoutKeithleyMultimeter;
-bool DoTransmittAtomnumberToAnalogOutPort;	
+bool DoTransmittAtomnumberToAnalogOutPort;
 double TransmittAtomnumberCalibration;
 
 double SrCALBlue487nmTransparencyFrequency;
@@ -1216,14 +1225,14 @@ bool CameraUsed[NrCameras];
 
 bool OpenImaging3Shutter;
 
-bool OpenAQuRAImaging1Shutter; 
-bool OpenAQuRAImaging2Shutter; 
-bool OpenAQuRAImaging3Shutter; 
-bool OpenAQuRAImaging4Shutter; 
-bool OpenAQuRAImaging5Shutter; 
-bool OpenAQuRATransparencyShutter; 
+bool OpenAQuRAImaging1Shutter;
+bool OpenAQuRAImaging2Shutter;
+bool OpenAQuRAImaging3Shutter;
+bool OpenAQuRAImaging4Shutter;
+bool OpenAQuRAImaging5Shutter;
+bool OpenAQuRATransparencyShutter;
 bool OpenAQuRARepumpTransparencyShutter;
-bool OpenBlueAQuRAProbeBeamShutter; 
+bool OpenBlueAQuRAProbeBeamShutter;
 
 
 long CameraDisplayedPictureNumber[NrCameras];
@@ -1243,7 +1252,7 @@ double CameraExposureTimeAbs;
 double CameraExposureTimeFKS;
 double CameraTemperature[NrCameras];
 long CameraBinningX[NrCameras];
-long CameraBinningY[NrCameras]; 
+long CameraBinningY[NrCameras];
 long CamerahSpeed[NrCameras];
 long CameraFKSDataImages[NrCameras];
 long CameraFKSReferenceImages[NrCameras];
@@ -1268,7 +1277,7 @@ double CameraAtomicMagneticMoment[NrCameras];
 CString* CameraAtomicName[NrCameras];
 
 double CameraProbeDetuning[NrCameras];
-double CameraExpansionTime[NrCameras]; 
+double CameraExpansionTime[NrCameras];
 double CameraMaxFluorescence[NrCameras];
 double CameraCalibration[NrCameras];
 
@@ -1303,9 +1312,9 @@ double FluoMOTEmptyPulseFiberIntensity;
 
 
 bool DoLoadParametersFromFile;
-CString* LoadParametersFromFileName;		
+CString* LoadParametersFromFileName;
 double DoLoadParametersFromFileDelay;
-long DoLoadParametersFromFilePictureNumber;		
+long DoLoadParametersFromFilePictureNumber;
 
 bool LockSrRepumpEnableLockAfterRun;
 bool ShutDownCoilsAfterRun;

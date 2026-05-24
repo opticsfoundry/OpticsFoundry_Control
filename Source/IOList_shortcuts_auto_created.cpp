@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "IOList_shortcuts_auto_created.h"
 #include "IORegister.h"
-#include "IOList.h"
 
 //The following code is automatically created and provides you quick and easy access to all outputs defined in ControlUserIOConfig.json.
 //These shortcuts are only useful if you use the .exe version of control,

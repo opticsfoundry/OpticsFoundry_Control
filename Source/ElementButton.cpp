@@ -4,9 +4,9 @@
 
 #include "stdafx.h"
 #include "Control.h"
-#include "Sequence.h"
 #include "ElementButton.h"
 #include "EasyDialog.h"
+#include "MessageReceiver.h"
 #include "MenuButton.h"
 
 #ifdef _DEBUG

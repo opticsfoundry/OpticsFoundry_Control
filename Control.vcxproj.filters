@@ -734,6 +734,9 @@
     <ClInclude Include="Source\IO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\IOListConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Source\IOList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -884,6 +887,9 @@
     <ClInclude Include="Source\ParamList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ParamListCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Source\ParamRegister.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -930,6 +936,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Sequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SequenceImplementationIncludes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\SequenceLib.h">

@@ -6,7 +6,7 @@
 #include "Control.h"
 #include "SingleWaveform.h"
 #include "Output.h"
-#include "IOList.h"
+#include "IORegister.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -26,9 +26,9 @@ CSingleWaveform::CSingleWaveform(CString aOutputName,double aDeltaTime) {
 	LastTime=StartTime-2*aDeltaTime;
 	DeltaTime=aDeltaTime;
 	DeleteMyOutputs=false;
-	AnalogOut=IOList->GetAnalogOut(OutputName,true);
-	DigitalOut=IOList->GetDigitalOut(OutputName,true);	
-	if ((AnalogOut==NULL) && (DigitalOut==NULL)) 
+	AnalogOut=IORegisterList->GetAnalogOut(OutputName,true);
+	DigitalOut=IORegisterList->GetDigitalOut(OutputName,true);
+	if ((AnalogOut==NULL) && (DigitalOut==NULL))
 		ControlMessageBox("CSingleWaveform::CSingleWaveform :: Channel "+aOutputName+" does not exist.",MB_OK);
 }
 
@@ -36,11 +36,11 @@ CSingleWaveform::CSingleWaveform(double (*aAnalogOutFunc)(double Value,bool GetV
 {
 	DeleteMyOutputs=false;
 	AnalogOutFunc=aAnalogOutFunc;
-	OutputName="";		
-	LastTime=StartTime-2*aDeltaTime;	
+	OutputName="";
+	LastTime=StartTime-2*aDeltaTime;
 	DeltaTime=aDeltaTime;
 	AnalogOut=NULL;
-	DigitalOut=NULL;	
+	DigitalOut=NULL;
 }
 
 CSingleWaveform::~CSingleWaveform()
@@ -52,7 +52,7 @@ CSingleWaveform::~CSingleWaveform()
 }
 
 bool CSingleWaveform::SetOutputs(double AktTime)
-{	
+{
 	Active=false;
 	return Active;
 }
@@ -94,16 +94,16 @@ CString CSingleWaveform::GetDescription(int Mode)
 
 void CSingleWaveform::Serialize(CArchive &archive)
 {
-	CWaveform::Serialize( archive );	
+	CWaveform::Serialize( archive );
 	if( archive.IsStoring() ) {
         archive << DeltaTime << LastTime << OutputName << StartTime;
 		if (AnalogOut) archive << 'A' << AnalogOut->ChannelNr;
-		else archive << '0';		
+		else archive << '0';
 		if (DigitalOut) archive << 'D' << DigitalOut->ChannelNr;
 		else archive << '0';
-		if (AnalogOutFunc) ControlMessageBox("CSingleWaveform::Serialize : unable to serialize AnalogOutFunc");				
+		if (AnalogOutFunc) ControlMessageBox("CSingleWaveform::Serialize : unable to serialize AnalogOutFunc");
     } else {
-		char buf;		
+		char buf;
 		unsigned int ChannelNr;
 		archive >> DeltaTime >> LastTime >> OutputName >> StartTime;
 		archive>>buf;
@@ -112,14 +112,14 @@ void CSingleWaveform::Serialize(CArchive &archive)
 			archive >> ChannelNr;
 			AnalogOut=new CAnalogOut(ChannelNr);
 			AnalogOut->ConvertAnalogOutChannelNr();
-		} else AnalogOut=NULL;		
+		} else AnalogOut=NULL;
 		archive>>buf;
 		if (buf=='D') {
 			//archive >> DigitalOut;
 			archive >> ChannelNr;
 			DigitalOut=new CDigitalOut(ChannelNr);
 			DigitalOut->ConvertDigitalOutChannelNr();
-		} else DigitalOut=NULL;				
+		} else DigitalOut=NULL;
 		DeleteMyOutputs=true;
 		AnalogOutFunc=NULL;
 	}
@@ -128,12 +128,12 @@ void CSingleWaveform::Serialize(CArchive &archive)
 bool CSingleWaveform::UsesSlaveIO(CSlaveIO *SlaveIO)
 {
 	if (AnalogOut) {
-		if ((AnalogOut->ChannelNr>=SlaveIO->AnalogOutStartNr) && 
+		if ((AnalogOut->ChannelNr>=SlaveIO->AnalogOutStartNr) &&
 			(AnalogOut->ChannelNr<SlaveIO->AnalogOutStartNr+SlaveIO->NrAnalogOut))
 		return true;
 	}
 	if (DigitalOut) {
-		if ((DigitalOut->ChannelNr>=SlaveIO->DigitalOutStartNr) && 
+		if ((DigitalOut->ChannelNr>=SlaveIO->DigitalOutStartNr) &&
 			(DigitalOut->ChannelNr<SlaveIO->DigitalOutStartNr+SlaveIO->NrDigitalOut))
 		return true;
 	}

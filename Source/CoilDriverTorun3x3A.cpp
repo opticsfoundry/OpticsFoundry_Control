@@ -12,7 +12,7 @@ https://github.com/KLFAMO/current3x3A_Artiq/tree/aqura
 #include "stdafx.h"
 #include "Control.h"
 #include "CoilDriverTorun3x3A.h"
-#include "ParamList.h"
+#include "ParamListCore.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE

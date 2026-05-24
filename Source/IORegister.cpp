@@ -18,6 +18,7 @@
 #include "AD9858.h"
 #include "AD9959.h"
 #include "Sequence.h"
+#include "ParamListCore.h"
 #include "IOList_shortcuts_auto_created.h"
 #include "ParamList_shortcuts_auto_created.h"
 #include "SequenceListLambdaFunction.h"

@@ -16,7 +16,7 @@
 #include "UniMessList.h"
 #include "SystemParamList.h"
 #include "ParamList.h"
-#include "IOList.h"
+#include "IORegister.h"
 #include "Vision.h"
 #include "EasyDialog.h"
 #include "Ramp.h"
@@ -57,7 +57,7 @@ CSequenceLib::CSequenceLib()
 	ExecuteMeasurementDialog=NULL;
 	ExecuteQueueDialog=NULL;
 	ExecuteReferenceQueueDialog=NULL;
-	IterateQueueDialog=NULL;	
+	IterateQueueDialog=NULL;
 	MeasurementQueueRunNr=0;
 	ExecutingSeries=false;
 	SeriesNrParams=1;
@@ -68,27 +68,27 @@ CSequenceLib::CSequenceLib()
 CSequenceLib::~CSequenceLib()
 {
 	if (CancelLoopDialog1) {
-		CancelLoopDialog1->DestroyWindow();		
+		CancelLoopDialog1->DestroyWindow();
 		CancelLoopDialog1=NULL;
 	}
 	if (CancelLoopDialog2) {
-		CancelLoopDialog2->DestroyWindow();		
+		CancelLoopDialog2->DestroyWindow();
 		CancelLoopDialog2=NULL;
 	}
 	if (ExecuteQueueDialog) {
-		ExecuteQueueDialog->DestroyWindow();		
+		ExecuteQueueDialog->DestroyWindow();
 		ExecuteQueueDialog=NULL;
 	}
 	if (ExecuteReferenceQueueDialog) {
-		ExecuteReferenceQueueDialog->DestroyWindow();		
+		ExecuteReferenceQueueDialog->DestroyWindow();
 		ExecuteReferenceQueueDialog=NULL;
 	}
 	if (IterateQueueDialog) {
-		IterateQueueDialog->DestroyWindow();		
+		IterateQueueDialog->DestroyWindow();
 		IterateQueueDialog=NULL;
 	}
 	if (ExecuteMeasurementDialog) {
-		ExecuteMeasurementDialog->DestroyWindow();		
+		ExecuteMeasurementDialog->DestroyWindow();
 		ExecuteMeasurementDialog=NULL;
 	}
 	if (UserIOConfig) {
@@ -108,17 +108,17 @@ void CSequenceLib::WaitBusCycles(long aNumberOfBusCycled, int ID) {
 }
 
 bool CSequenceLib::Waveform(CWaveform *Waveform)
-{	
-	return Output->AddWaveform(Waveform);		
+{
+	return Output->AddWaveform(Waveform);
 }
 
 void CSequenceLib::RemoveWaveform(CWaveform *Waveform)
-{		
-	Output->RemoveWaveform(Waveform);		
+{
+	Output->RemoveWaveform(Waveform);
 }
 
 void CSequenceLib::StartSequence(bool (*aTrigger)(CWnd* parent),CWnd* parent, bool aShowRunProgressDialog)
-{	
+{
 	if (DebugOn) Output->SetDebugMode();
 	AtomPath="";
 	if (!parent) parent=CallingDialog;
@@ -137,7 +137,7 @@ void CSequenceLib::SetClockExternal(bool aExternalClock, bool aExternalClock1) {
 }
 
 void CSequenceLib::StopSequence(bool NonBlocking)
-{	
+{
 	Output->StopSequence(SlaveServer, NonBlocking);
 }
 
@@ -152,8 +152,8 @@ bool CSequenceLib::Decision(CString DecisionName)
 	if ((Param) && (Param->IsKindOf( RUNTIME_CLASS( CParamBool ) ) )) {
 		if (!((CParamBool*)Param)->SequenceFlowDeciding) {
 			CString Error;
-			Error.Format("CSequenceLib::Decision :: Bool variable "+DecisionName+" used as Decision without being one.\n Correct the corresponding entry in CIOList->");
-			ControlMessageBox(Error,MB_OK);		
+			Error.Format("CSequenceLib::Decision :: Bool variable "+DecisionName+" used as Decision without being one.\n Correct the corresponding entry in CIORegisterList->");
+			ControlMessageBox(Error,MB_OK);
 		}
 		bool ok=*(((CParamBool*)Param)->Value);
 		if (ok) {
@@ -180,8 +180,8 @@ bool CSequenceLib::MessageMap(unsigned int Message,CWnd* parent)
 		case IDM_SAVE_PARAMETERS: ((CControlApp*)AfxGetApp())->SaveParameterDialog(); break;
 		case IDM_LOAD_PARAMETERS: ((CControlApp*)AfxGetApp())->LoadParameterDialog(); break;
 		case IDM_QUEUE_EXPERIMENT: {
-			MeasurementQueue->Add(new CMeasurement(true, GetExperimentalRunName())); 
-			if (!HardwareAccess) SendCyclicOperationCommand(2, 0); 
+			MeasurementQueue->Add(new CMeasurement(true, GetExperimentalRunName()));
+			if (!HardwareAccess) SendCyclicOperationCommand(2, 0);
 			break;
 		}
 		case IDM_REFERENCE_QUEUE_EXPERIMENT: ReferenceMeasurementQueue->Add(new CMeasurement(true, GetExperimentalRunName())); if (!HardwareAccess) SendCyclicOperationCommand(8, 0); break;
@@ -197,8 +197,8 @@ bool CSequenceLib::MessageMap(unsigned int Message,CWnd* parent)
 		TCHAR buf[200];
 		LoadString(ControlApp.m_hInstance, Message, buf, 200);
 		CString Text;
-		Text.Format("CSequenceLib::Message :: unknown message ID %i (%s)",Message,buf);		
-		ControlMessageBox(Text,MB_OK);		
+		Text.Format("CSequenceLib::Message :: unknown message ID %i (%s)",Message,buf);
+		ControlMessageBox(Text,MB_OK);
 	}
 	return Received;
 }
@@ -210,7 +210,7 @@ constexpr char CyclePictureNumberFileName[]  = "CyclePicNr.dat";
 
 void CSequenceLib::StartCyclicOperation(CWnd* parent) {
 	if (!HardwareAccess) return;
-	
+
 	SaveParams();
 
 	unsigned long LastCommandNr=0;
@@ -222,19 +222,19 @@ void CSequenceLib::StartCyclicOperation(CWnd* parent) {
 	CString OldFile;
 	int i=0;
 	OldFile.Format(CycleBaseFileName,i);
-	CFile f;			
+	CFile f;
 	while (i<1000) {
-		if (f.Open( OldFile, CFile::modeRead ) ) {		
+		if (f.Open( OldFile, CFile::modeRead ) ) {
 			f.Close();
-			f.Remove(OldFile);		
+			f.Remove(OldFile);
 		}
 		i++;
 		OldFile.Format(CycleBaseFileName,i);
 	}
 
 	if ((CancelLoopDialog1 == NULL) && (parent)) {
-		CancelLoopDialog1 = new CExecuteMeasurementDlg(parent,this);					
-		CancelLoopDialog1->Create();	
+		CancelLoopDialog1 = new CExecuteMeasurementDlg(parent,this);
+		CancelLoopDialog1->Create();
 		RECT rect;
 		if (!ActiveDialog) {
 			rect.left=0;
@@ -242,7 +242,7 @@ void CSequenceLib::StartCyclicOperation(CWnd* parent) {
 		} else ActiveDialog->GetWindowRect(&rect);
 		CancelLoopDialog1->SetWindowPos( &CWnd::wndTop ,rect.left+0,rect.top+0,150,150, SWP_NOZORDER | SWP_NOSIZE | SWP_DRAWFRAME );
 	}
-	
+
 	while (CancelLoopDialog1) {
 		//Save next Vision picture number and series number
 		long NextPictureNumber;
@@ -254,26 +254,26 @@ void CSequenceLib::StartCyclicOperation(CWnd* parent) {
 		//Set Semaphore to inhibit Cycle remote control from reading file while it is written
 		/*ofstream Semaphore;
 		Semaphore.open(CycleSemaphoreFileName);
-		Semaphore<<endl; 
+		Semaphore<<endl;
 		Semaphore.close();*/
 
 		ofstream PicNrFile;
 		PicNrFile.open(CyclePictureNumberFileName);
 		PicNrFile<<LastCommandNr<<endl;
 		PicNrFile<<NextPictureNumber<<endl;
-		PicNrFile<<NextSeriesNumber<<endl;		
+		PicNrFile<<NextSeriesNumber<<endl;
 		PicNrFile.close();
 
 		/*f.Remove(CycleSemaphoreFileName);*/
 
 		CString buf;
 		buf.Format("Cycling. Last commands:\n %s\n %s\n %s\n %s\n %s\n",LastCommands[0],LastCommands[1],LastCommands[2],LastCommands[3],LastCommands[4]);
-		if (CancelLoopDialog1) CancelLoopDialog1->SetData(buf,100,100);							
-		
+		if (CancelLoopDialog1) CancelLoopDialog1->SetData(buf,100,100);
+
 		if (DoLoadParametersFromFileDelay>0) {
 			if ((CancelLoopDialog2 == NULL) && (parent)) {
-				CancelLoopDialog2 = new CExecuteMeasurementDlg(parent,this);					
-				CancelLoopDialog2->Create();	
+				CancelLoopDialog2 = new CExecuteMeasurementDlg(parent,this);
+				CancelLoopDialog2->Create();
 				RECT rect;
 				if (!ActiveDialog) {
 					rect.left=0;
@@ -285,29 +285,29 @@ void CSequenceLib::StartCyclicOperation(CWnd* parent) {
 			while (ElapsedTime<DoLoadParametersFromFileDelay) {
 				CString buf;
 				buf.Format("Time till run number %i: %.1f s / %.1f s",NextPictureNumber,ElapsedTime/1000.0,DoLoadParametersFromFileDelay/1000.0);
-				if (CancelLoopDialog2) CancelLoopDialog2->SetData(buf,(int)ElapsedTime,(int)DoLoadParametersFromFileDelay);					
+				if (CancelLoopDialog2) CancelLoopDialog2->SetData(buf,(int)ElapsedTime,(int)DoLoadParametersFromFileDelay);
 				ElapsedTime=ElapsedTime+100;
-				Wait(100,1070);				
+				Wait(100,1070);
 			}
 			if (CancelLoopDialog2) {
-				CancelLoopDialog2->DestroyWindow();		
+				CancelLoopDialog2->DestroyWindow();
 				CancelLoopDialog2=NULL;
 				if (CancelLoopDialog1) {
-					CancelLoopDialog1->DestroyWindow();		
+					CancelLoopDialog1->DestroyWindow();
 					CancelLoopDialog1=NULL;
 				}
 			}
 		}
-	
+
 		//Look for new command
-		CString NextCommand;			
-		CFile f;		
+		CString NextCommand;
+		CFile f;
 		bool DoNextCommand=true;
 		while (DoNextCommand) {
 			NextCommand.Format(CycleBaseFileName,LastCommandNr);
 
 			//check remote Semaphore to avoid reading file while it is written
-			/*CFile fs;		
+			/*CFile fs;
 			DWORD StartTime=GetTickCount();
 			while (fs.Open(RemoteSemaphoreFileName, CFile::modeRead) && ((GetTickCount()-StartTime)<500)) {
 				fs.Close();
@@ -317,27 +317,27 @@ void CSequenceLib::StartCyclicOperation(CWnd* parent) {
 			bool EndIt=false;
 			if ((!EndIt) && f.Open(NextCommand, CFile::modeRead)) {
 				f.Close();
-//				double helpAktIPG200WLaserCurrent=AktIPG200WLaserCurrent;				
-				((CControlApp*)AfxGetApp())->LoadParams(NextCommand);	
+//				double helpAktIPG200WLaserCurrent=AktIPG200WLaserCurrent;
+				((CControlApp*)AfxGetApp())->LoadParams(NextCommand);
 //				AktIPG200WLaserCurrent=helpAktIPG200WLaserCurrent;
-				f.Remove(NextCommand);											
+				f.Remove(NextCommand);
 				for (int i=1;i<NrLastCommands;i++) LastCommands[i]=LastCommands[i-1];
 				switch (CyclicOperationCommandNr) {
 					case 0: //normal experimental run
-						DoNextCommand=false; 
-						LastCommands[0].Format("%u: Single Run Nr %u",LastCommandNr,NextPictureNumber);							
-						break; 
-					case 1: //Execute single measurement series							
+						DoNextCommand=false;
+						LastCommands[0].Format("%u: Single Run Nr %u",LastCommandNr,NextPictureNumber);
+						break;
+					case 1: //Execute single measurement series
 						LastCommands[0].Format("%u: Series %s",LastCommandNr,UniMessList->UniMess[CyclicOperationUnimessNr]->Name);
 						UniMessList->UniMess[CyclicOperationUnimessNr]->Execute(parent);
-					break;						
+					break;
 					case 2: //single run store in queue
 						MeasurementQueue->Add(new CMeasurement(true,GetExperimentalRunName()));
 						LastCommands[0].Format("%u: Single Run stored in queue",LastCommandNr);
 					break;
-					case 3: //Measurement store in queue														
+					case 3: //Measurement store in queue
 						LastCommands[0].Format("%u: Series %s stored in queue",LastCommandNr,UniMessList->UniMess[CyclicOperationUnimessNr]->Name);
-						UniMessList->UniMess[CyclicOperationUnimessNr]->StoreInQueue();							
+						UniMessList->UniMess[CyclicOperationUnimessNr]->StoreInQueue();
 					break;
 					case 4: //clear Measurement queue
 						MeasurementQueue->Clear();
@@ -352,7 +352,7 @@ void CSequenceLib::StartCyclicOperation(CWnd* parent) {
 						LastCommands[0].Format("%u: Measurement queue iterated",LastCommandNr);
 					break;
 					case 7: //stop cyclic operation
-						CancelLoopDialog1->DestroyWindow();		
+						CancelLoopDialog1->DestroyWindow();
 						CancelLoopDialog1=NULL;
 						LastCommands[0].Format("%u: Cyclic operation stopped",LastCommandNr);
 						DoNextCommand=false;
@@ -364,15 +364,15 @@ void CSequenceLib::StartCyclicOperation(CWnd* parent) {
 					case 9: //clear reference Measurement queue
 						ReferenceMeasurementQueue->Clear();
 						LastCommands[0].Format("%u: Reference measurement queue cleared",LastCommandNr);
-					break;						
-				}		
+					break;
+				}
 				LastCommandNr++;
 			} else DoNextCommand=false;
 		}
-		if (CancelLoopDialog1) DoExperimentalSequence(parent);		
+		if (CancelLoopDialog1) DoExperimentalSequence(parent);
 	}
 	if (CancelLoopDialog1) {
-		CancelLoopDialog1->DestroyWindow();		
+		CancelLoopDialog1->DestroyWindow();
 		CancelLoopDialog1=NULL;
 	}
 	f.Remove(CyclePictureNumberFileName);
@@ -386,7 +386,7 @@ void CSequenceLib::StopCyclicOperation() {
 long MyLastCommandNr=0;
 void CSequenceLib::SendCyclicOperationCommand(long CommandNr, long UnimessNr) {
 
-	//CFile fs;		
+	//CFile fs;
 	//DWORD StartTime=GetTickCount();
 	//while (fs.Open(CycleSemaphoreFileName, CFile::modeRead) && ((GetTickCount()-StartTime)<500)) {
 	//	fs.Close();
@@ -410,24 +410,24 @@ void CSequenceLib::SendCyclicOperationCommand(long CommandNr, long UnimessNr) {
 		ControlMessageBox(buf);
 		return;
 	}
-		
+
 	long LastCommandNr;
 	in>>LastCommandNr;
 	if (MyLastCommandNr<LastCommandNr) MyLastCommandNr=LastCommandNr;
 	long PicNrFile;
 	in>>PicNrFile;
-	long NextSeriesNumber;		
+	long NextSeriesNumber;
 	in>>NextSeriesNumber;
 	in.close();
 
 	CyclicOperationUnimessNr=UnimessNr;
 	CyclicOperationCommandNr=CommandNr;
-		
+
 	CString CommandFileName;
-	CommandFileName.Format(CycleBaseFileName,MyLastCommandNr);	
+	CommandFileName.Format(CycleBaseFileName,MyLastCommandNr);
 	MyLastCommandNr++;
 	((CControlApp*)AfxGetApp())->SaveParams(CommandFileName);
-	
+
 	/*CFile f;
 	f.Remove(RemoteSemaphoreFileName);
 	*/
@@ -451,7 +451,7 @@ void CSequenceLib::LoadParams()
 
 void CSequenceLib::SelectReferenceParameterFile() {
 	CFileDialog FileDialog( true, "txt", *ParameterReferenceFileName);
-	if (FileDialog.DoModal()==IDOK) {		
+	if (FileDialog.DoModal()==IDOK) {
 		*ParameterReferenceFileName=FileDialog.GetPathName();
 		int dotIndex = ParameterReferenceFileName->ReverseFind('.');
 		if ((dotIndex != -1) && (dotIndex > 1)) {
@@ -465,7 +465,7 @@ void CSequenceLib::SelectReferenceParameterFile() {
 			(*ParameterReferenceFileName) = ParameterReferenceFileName->Left(underlineIndex);
 		}
 		SaveParams();
-		ControlApp.LoadReferenceParams(*ParameterReferenceFileName);			
+		ControlApp.LoadReferenceParams(*ParameterReferenceFileName);
 	}
 }
 
@@ -473,7 +473,7 @@ void CSequenceLib::DebugStart(double aDebugDeltaTime,CString aFilename)
 {
 	if (aFilename=="") aFilename=*DebugFileName;
 	if (aDebugDeltaTime<0) aDebugDeltaTime=DebugDeltaTime;
-	Output->DebugStart(DebugOn,aDebugDeltaTime,aFilename,DebugScaled,DebugOriginShift,DebugSyncOn,*DebugSyncFileName,DebugWaveformOn,*DebugWaveformFileName,DebugAnalogGain);	
+	Output->DebugStart(DebugOn,aDebugDeltaTime,aFilename,DebugScaled,DebugOriginShift,DebugSyncOn,*DebugSyncFileName,DebugWaveformOn,*DebugWaveformFileName,DebugAnalogGain);
 }
 
 void CSequenceLib::DebugStop()
@@ -496,14 +496,14 @@ void CSequenceLib::SetPreparationMode()
 void CSequenceLib::SetAssembleSequenceListMode() {
 	Output->SetAssembleSequenceListMode();
 	SetGPIBStoreInSequenceListMode(/*ForceWriting*/true);
-	SetSerialStoreInSequenceListMode(/*ForceWriting*/true);	
+	SetSerialStoreInSequenceListMode(/*ForceWriting*/true);
 }
 
 void CSequenceLib::SetWaveformGenerationMode()
-{	
+{
 	Output->SetWaveformGenerationMode();
-	SetGPIBStoreInWaveformMode(/*ForceWriting*/ true);	
-	SetSerialStoreInWaveformMode(/*ForceWriting*/ true);		
+	SetGPIBStoreInWaveformMode(/*ForceWriting*/ true);
+	SetSerialStoreInWaveformMode(/*ForceWriting*/ true);
 }
 
 bool CSequenceLib::SetMemoryReadoutMode() {
@@ -514,11 +514,11 @@ bool CSequenceLib::SetMemoryReadoutMode() {
 
 void CSequenceLib::SwitchForceWritingMode(bool OnOff) {
 	Output->SwitchForceWritingMode(OnOff);
-}	
+}
 
 void CSequenceLib::Debug(CString Name, bool OnOff)
 {
-	IOList->Debug(Name, OnOff);
+	IORegisterList->Debug(Name, OnOff);
 }
 
 void CSequenceLib::DeleteWaveform(CWaveform *Waveform)
@@ -528,7 +528,7 @@ void CSequenceLib::DeleteWaveform(CWaveform *Waveform)
 
 void CSequenceLib::DebugAll()
 {
-	IOList->DebugAll();
+	IORegisterList->DebugAll();
 }
 
 double CSequenceLib::GetTime()
@@ -558,8 +558,8 @@ void CSequenceLib::SetGPIBStoreInSequenceListMode(bool ForceWriting)
 
 bool CSequenceLib::SetGPIBDirectOutputMode()
 {
-	if (Output->IsInWaveformMode() || Output->IsInAssembleSequenceListMode()) {		
-		GPIB.SetDisabledMode();	
+	if (Output->IsInWaveformMode() || Output->IsInAssembleSequenceListMode()) {
+		GPIB.SetDisabledMode();
 		return false;
 	} else {
 		GPIB.SetDirectOutputMode();
@@ -589,8 +589,8 @@ void CSequenceLib::SetSerialStoreInSequenceListMode(bool ForceWriting)
 
 bool CSequenceLib::SetSerialDirectOutputMode()
 {
-	if (Output->IsInWaveformMode()) {		
-		Serial.SetDisabledMode();	
+	if (Output->IsInWaveformMode()) {
+		Serial.SetDisabledMode();
 		return false;
 	} else {
 		Serial.SetDirectOutputMode();
@@ -601,7 +601,7 @@ bool CSequenceLib::SetSerialDirectOutputMode()
 CString CSequenceLib::GetTrapName(int AktTrap)
 {
 	TCHAR buf[200];
-	LoadString(ControlApp.m_hInstance, AktTrap, buf, 200);	
+	LoadString(ControlApp.m_hInstance, AktTrap, buf, 200);
 	return buf;
 }
 
@@ -630,20 +630,20 @@ void CSequenceLib::ExecuteMeasurement(CMeasurementList *MeasurementList,CWnd* pa
 	for (int i=0;i<4;i++) if (MeasurementList->ParamName[i]!="") {
 		Param[i]=ParamList->GetParam(MeasurementList->ParamName[i]);
 		if (Param[i]) SaveValue[i]=Param[i]->GetValue();
-	}	
+	}
 	if (MeasurementList->ContinueSerie) Vision->ContinueSerie();
 	else Vision->StartSerie(MeasurementList->Name+" measurement",MeasurementList->NrParams,MeasurementList->ParamName);
 	MeasurementList->ContinueSerie=false;
-	Vision->SynchronizeParameters();	
-	Vision->RegisterParameters(MeasurementList->GetDescriptionAsString("#*"));	
+	Vision->SynchronizeParameters();
+	Vision->RegisterParameters(MeasurementList->GetDescriptionAsString("#*"));
 	ExecutingSeries=true;
 	SeriesNrParams=MeasurementList->NrParams;
 	long NrPoints=MeasurementList->GetCount();
-	CMeasurementPoint *point=MeasurementList->GetFirstPoint();	
-	long AktNr=1;	
+	CMeasurementPoint *point=MeasurementList->GetFirstPoint();
+	long AktNr=1;
 	if (ExecuteMeasurementDialog == NULL) {
 		ExecuteMeasurementDialog = new CExecuteMeasurementDlg(parent,this);
-		ExecuteMeasurementDialog->Create();		
+		ExecuteMeasurementDialog->Create();
 		RECT rect;
 		if (!ActiveDialog) {
 			rect.left=0;
@@ -651,22 +651,22 @@ void CSequenceLib::ExecuteMeasurement(CMeasurementList *MeasurementList,CWnd* pa
 		} else ActiveDialog->GetWindowRect(&rect);
 		ExecuteMeasurementDialog->SetWindowPos(&CWnd::wndTop ,rect.left+0,rect.top+500,150,150, SWP_NOZORDER | SWP_NOSIZE | SWP_DRAWFRAME );
 	}
-	SwitchTimingJitterCompensation(On);	
+	SwitchTimingJitterCompensation(On);
 	long PointsSinceLastReferencePicture=0;
 	while ((point) && (ExecuteMeasurementDialog)) {
 		if (point) {
 			for (int i=0;i<4;i++) if (Param[i]) Param[i]->SetValue(point->d[i]);
 			CString buf;
-			buf.Format("%s measurement\nPoint (%i/%i)\n",MeasurementList->Name,AktNr,NrPoints);			
+			buf.Format("%s measurement\nPoint (%i/%i)\n",MeasurementList->Name,AktNr,NrPoints);
 			for (unsigned int k=0;k<MeasurementList->NrParams;k++) {
 				CString buf2;
 				buf2.Format("\n%s=%.5f",MeasurementList->ParamName[k],point->d[k]);
-				buf+=buf2;				
+				buf+=buf2;
 			}
 			if (ExecuteMeasurementDialog) ExecuteMeasurementDialog->SetData(buf,AktNr,NrPoints);
 			if (ExecuteMeasurementDialog) {
 				Vision->RegisterInformation(MeasurementList->NrParams,point->d);
-				DoExperimentalSequence(parent);								
+				DoExperimentalSequence(parent);
 				PointsSinceLastReferencePicture++;
 				MeasurementQueueRunNr++;
 				CheckReferenceQueueExecution(parent);
@@ -678,20 +678,20 @@ void CSequenceLib::ExecuteMeasurement(CMeasurementList *MeasurementList,CWnd* pa
 					PointsSinceLastReferencePicture=0;
 					for (int i=0;i<4;i++) if (Param[i]) Param[i]->SetValue(MeasurementList->Reference[i]);
 					CString buf;
-					buf.Format("%s measurement\nReference point\n",MeasurementList->Name);			
+					buf.Format("%s measurement\nReference point\n",MeasurementList->Name);
 					for (unsigned int k=0;k<MeasurementList->NrParams;k++) {
 						CString buf2;
 						buf2.Format("\n%s=%.3f",MeasurementList->ParamName[k],MeasurementList->Reference[k]);
-						buf+=buf2;				
+						buf+=buf2;
 					}
 					if (ExecuteMeasurementDialog) ExecuteMeasurementDialog->SetData(buf,AktNr,NrPoints);
 					if (ExecuteMeasurementDialog) {
 						Vision->RegisterInformation(MeasurementList->NrParams,MeasurementList->Reference);
-						DoExperimentalSequence(parent);						
+						DoExperimentalSequence(parent);
 						MeasurementQueueRunNr++;
-						CheckReferenceQueueExecution(parent);				
+						CheckReferenceQueueExecution(parent);
 					}
-				}				
+				}
 			}
 		}
 		point=MeasurementList->GetRandomPoint();
@@ -705,7 +705,7 @@ void CSequenceLib::ExecuteMeasurement(CMeasurementList *MeasurementList,CWnd* pa
 	delete MeasurementList;
 	MeasurementList=NULL;
 	if (ExecuteMeasurementDialog) {
-		ExecuteMeasurementDialog->DestroyWindow();		
+		ExecuteMeasurementDialog->DestroyWindow();
 		ExecuteMeasurementDialog=NULL;
 	}
 	SwitchTimingJitterCompensation(Off);
@@ -714,23 +714,23 @@ void CSequenceLib::ExecuteMeasurement(CMeasurementList *MeasurementList,CWnd* pa
 
 void CSequenceLib::ExecuteMeasurementDlgDone(CDialog *me)
 {
-	if (me==CancelLoopDialog1) (CancelLoopDialog1 = NULL);		
-	if (me==CancelLoopDialog2) (CancelLoopDialog2 = NULL);		
+	if (me==CancelLoopDialog1) (CancelLoopDialog1 = NULL);
+	if (me==CancelLoopDialog2) (CancelLoopDialog2 = NULL);
 	if (me==ExecuteMeasurementDialog) (ExecuteMeasurementDialog = NULL);
 	else if (me==ExecuteQueueDialog) (ExecuteQueueDialog = NULL);
-	else if (me==ExecuteReferenceQueueDialog) (ExecuteReferenceQueueDialog = NULL);	
-	else if (me==IterateQueueDialog) (IterateQueueDialog = NULL);	
+	else if (me==ExecuteReferenceQueueDialog) (ExecuteReferenceQueueDialog = NULL);
+	else if (me==IterateQueueDialog) (IterateQueueDialog = NULL);
 	// don't delete ExecuteMeasurementDialog; !
 }
 
 void CSequenceLib::ExecuteMeasurementQueue(bool Iterating,CWnd* parent)
 {
 	if (!Iterating) MeasurementQueueRunNr=0;
-	if (!InitializeSequence()) return;	
+	if (!InitializeSequence()) return;
 	if (!MeasurementQueue->PrepareFirstMeasurement()) return;
 	if (ExecuteQueueDialog == NULL) {
 		ExecuteQueueDialog = new CExecuteMeasurementDlg(parent,this);
-		ExecuteQueueDialog->Create();		
+		ExecuteQueueDialog->Create();
 		RECT rect;
 		if (!ActiveDialog) {
 			rect.left=0;
@@ -752,18 +752,18 @@ void CSequenceLib::ExecuteMeasurementQueue(bool Iterating,CWnd* parent)
 			//DWORD StartTime=GetTickCount();
 			//while (GetTickCount()-StartTime<500) ;
 			if (MeasurementQueue->SingleRun()) {
-				DoExperimentalSequence(parent);				
+				DoExperimentalSequence(parent);
 				MeasurementQueueRunNr++;
 				CheckReferenceQueueExecution(parent);
-			} else UniMessList->Execute(MeasurementQueue->GetAktName(),parent);			
+			} else UniMessList->Execute(MeasurementQueue->GetAktName(),parent);
 			//StartTime=GetTickCount();
 			//while (GetTickCount()-StartTime<500) ;
 			AktNr+=MeasurementQueue->GetNrPoints();
 		}
-	} while ((MeasurementQueue->PrepareNextMeasurement()) && (ExecuteQueueDialog));	
-	MeasurementQueue->FinishMeasurement();	
+	} while ((MeasurementQueue->PrepareNextMeasurement()) && (ExecuteQueueDialog));
+	MeasurementQueue->FinishMeasurement();
 	if (ExecuteQueueDialog) {
-		ExecuteQueueDialog->DestroyWindow();		
+		ExecuteQueueDialog->DestroyWindow();
 		ExecuteQueueDialog=NULL;
 	}
 	SwitchTimingJitterCompensation(Off);
@@ -771,12 +771,12 @@ void CSequenceLib::ExecuteMeasurementQueue(bool Iterating,CWnd* parent)
 }
 
 void CSequenceLib::ExecuteReferenceMeasurementQueue(CWnd* parent)
-{	
-	if (!InitializeSequence()) return;	
-	if (!ReferenceMeasurementQueue->PrepareFirstMeasurement()) return;	
+{
+	if (!InitializeSequence()) return;
+	if (!ReferenceMeasurementQueue->PrepareFirstMeasurement()) return;
 	if (ExecuteReferenceQueueDialog == NULL) {
 		ExecuteReferenceQueueDialog = new CExecuteMeasurementDlg(parent,this);
-		ExecuteReferenceQueueDialog->Create();		
+		ExecuteReferenceQueueDialog->Create();
 		RECT rect;
 		if (!ActiveDialog) {
 			rect.left=0;
@@ -803,18 +803,18 @@ void CSequenceLib::ExecuteReferenceMeasurementQueue(CWnd* parent)
 					double params[10];
 					for (int i=0;i<SeriesNrParams;i++) params[i]=0;
 					Vision->RegisterInformation(SeriesNrParams,params);
-				}	
-				DoExperimentalSequence(parent);				
-			//} else UniMessList->Execute(ReferenceMeasurementQueue->GetAktName(),parent);			
-			
+				}
+				DoExperimentalSequence(parent);
+			//} else UniMessList->Execute(ReferenceMeasurementQueue->GetAktName(),parent);
+
 			//StartTime=GetTickCount();
 			//while (GetTickCount()-StartTime<500) ;
-			AktNr+=ReferenceMeasurementQueue->GetNrPoints();			
-		}		
-	} while ((ReferenceMeasurementQueue->PrepareNextMeasurement()) && (ExecuteReferenceQueueDialog));		
+			AktNr+=ReferenceMeasurementQueue->GetNrPoints();
+		}
+	} while ((ReferenceMeasurementQueue->PrepareNextMeasurement()) && (ExecuteReferenceQueueDialog));
 	ReferenceMeasurementQueue->FinishMeasurement();
 	if (ExecuteReferenceQueueDialog) {
-		ExecuteReferenceQueueDialog->DestroyWindow();		
+		ExecuteReferenceQueueDialog->DestroyWindow();
 		ExecuteReferenceQueueDialog=NULL;
 	}
 	SwitchTimingJitterCompensation(Off);
@@ -823,18 +823,18 @@ void CSequenceLib::ExecuteReferenceMeasurementQueue(CWnd* parent)
 void CSequenceLib::IterateMeasurementQueue(bool ReferenceQueue,CWnd* parent)
 {
 	MeasurementQueueRunNr=0;
-	if (!InitializeSequence()) return;		
+	if (!InitializeSequence()) return;
 	if (IterateQueueDialog == NULL) {
 		IterateQueueDialog = new CExecuteMeasurementDlg(parent,this);
-		IterateQueueDialog->Create();		
+		IterateQueueDialog->Create();
 		RECT rect;
 		if (!ActiveDialog) {
 			rect.left=0;
 			rect.top=0;
-		} else ActiveDialog->GetWindowRect(&rect);		
+		} else ActiveDialog->GetWindowRect(&rect);
 		IterateQueueDialog->SetWindowPos( &CWnd::wndTop ,rect.left+0,rect.top+0,150,150, SWP_NOZORDER | SWP_NOSIZE | SWP_DRAWFRAME );
-	}	
-	long AktNr=1;	
+	}
+	long AktNr=1;
 	SwitchTimingJitterCompensation(On);
 	while ((IterateQueueDialog) && (AktNr<1000)) {
 		if (IterateQueueDialog) IterateQueueDialog->SetData("Iterating measurement queue",AktNr,1000);
@@ -864,7 +864,7 @@ void CSequenceLib::Error(const CString &error)
 	Output->Error(error);
 }
 
-unsigned long* CSequenceLib::ReadBufferedEventCount(unsigned short CounterNr) {	
+unsigned long* CSequenceLib::ReadBufferedEventCount(unsigned short CounterNr) {
 	return Output->ReadBufferedEventCount(CounterNr);
 }
 
@@ -876,30 +876,30 @@ long CSequenceLib::BufferedEventCountAvailablePoints(unsigned short CounterNr) {
 	return Output->BufferedEventCountAvailablePoints(CounterNr);
 }
 
-void CSequenceLib::Idle() {	
-	ControlMessageBox("CSequenceLib::Idle : abstract class called");  
+void CSequenceLib::Idle() {
+	ControlMessageBox("CSequenceLib::Idle : abstract class called");
 }
 
-void CSequenceLib::DigitalOut(const CString& Name, bool Value, bool noError) { 
-	IOList->DigitalOut(Name, Value, noError); 
+void CSequenceLib::DigitalOut(const CString& Name, bool Value, bool noError) {
+	IORegisterList->DigitalOut(Name, Value, noError);
 }
 
 void CSequenceLib::AnalogOut(const CString& Name, double Voltage, bool noError) {
-	IOList->AnalogOut(Name, Voltage, noError);
+	IORegisterList->AnalogOut(Name, Voltage, noError);
 }
 
 void CSequenceLib::ExecuteMeasurementQueueFinished(CWnd* parent) {
-	ControlMessageBox("CSequenceLib::ExecuteMeasurementQueueFinished : abstract class called");  
+	ControlMessageBox("CSequenceLib::ExecuteMeasurementQueueFinished : abstract class called");
 }
 
 void CSequenceLib::WakeUp() {
-	ControlMessageBox("CSequenceLib::WakeUp : abstract class called");  
+	ControlMessageBox("CSequenceLib::WakeUp : abstract class called");
 }
 
 void CSequenceLib::SaveOutputList()
-{	
-	IOList->SaveOutputList(*OutputListFilename);	
-	IOList->SaveOutputListComputerReadable(*OutputListFilenameComputerReadable);	
+{
+	IORegisterList->SaveOutputList(*OutputListFilename);
+	IORegisterList->SaveOutputListComputerReadable(*OutputListFilenameComputerReadable);
 }
 
 void CSequenceLib::SwitchTimingJitterCompensation(bool OnOff)
@@ -979,7 +979,7 @@ void CSequenceLib::LoadUserIOConfigFromFile() {
 	}
 }
 
-bool CSequenceLib::AssemblingIOList() { return IOList->AssemblingIOList; }
+bool CSequenceLib::AssemblingIOList() { return IsAssemblingIOList; }
 bool CSequenceLib::AssemblingParamList() { if (ParamList) return ParamList->AssemblingParamList; else return false; }
 bool CSequenceLib::AssemblingUtilityDialog() { return UtilityDialog->AssemblingUtilityDialog(); }
 
@@ -990,7 +990,7 @@ void CSequenceLib::InitializeSystemDefinedInUserIOConfigFile(bool OnlyFastOutput
 		UserIOConfig->InitializeSystem(AssemblingIOList(), AssemblingParamList(), OnlyFastOutputs, HardResetSystem);
 		if (AssemblingIOList()) {
 			if (DoCreateIOListShortcuts && !IOListShortcutsCreated) {
-				IOList->CreateIOListShurtcuts(*DebugFilePath + "IOList_shortcuts_auto_created");
+				IORegisterList->CreateIOListShurtcuts(*DebugFilePath + "IOList_shortcuts_auto_created");
 				IOListShortcutsCreated = true;
 			}
 		}
@@ -1009,13 +1009,13 @@ CString CSequenceLib::GetExperimentalRunName() {
 }
 
 void CSequenceLib::DefineLogic(CString DigitalOutName,int aLogic) {
-	CDigitalOut* Out=IOList->GetDigitalOut(DigitalOutName);
-	if (Out) Output->DefineLogic(Out->ChannelNr,aLogic);	
+	CDigitalOut* Out=IORegisterList->GetDigitalOut(DigitalOutName);
+	if (Out) Output->DefineLogic(Out->ChannelNr,aLogic);
 }
 
 void CSequenceLib::DefineCalibration(CString AnalogOutName,CCalibration* aCalibration) {
-	CAnalogOut* Out=IOList->GetAnalogOut(AnalogOutName);
-	if (Out) Output->DefineCalibration(Out->ChannelNr,aCalibration);	
+	CAnalogOut* Out=IORegisterList->GetAnalogOut(AnalogOutName);
+	if (Out) Output->DefineCalibration(Out->ChannelNr,aCalibration);
 }
 
 void CSequenceLib::InitializeSystem(bool OnlyFastOutputs, bool HardResetSystem) {
@@ -1053,7 +1053,7 @@ void CSequenceLib::AddAlternativeCommandNames() {
 	BiasZ = SwitchBiasZ * 1 + 0
 	//End ControlAlternativeCommandNames.txt
 	*/
-	//Now we read in this ASCII file and execute the commands taken from it, e.g. 
+	//Now we read in this ASCII file and execute the commands taken from it, e.g.
 	/*
 	ControlAPI.AddAlternativeCommandName("SetMOTCoilCurrent", "MOTCurrent", 2, 0);
 	ControlAPI.AddAlternativeCommandName("ChillerSetpoint", "ChillerSetpoint");
@@ -1075,7 +1075,7 @@ void CSequenceLib::AddAlternativeCommandNames() {
 	ControlAPI.AddAlternativeCommandName("SwitchBiasZ", "BiasZ");
 	*/
 
-	//lets go: open the file with filename "ControlAlternativeCommandNames.txt", read it line by line, ignore empty lines and comments, and convert the lines into the 
+	//lets go: open the file with filename "ControlAlternativeCommandNames.txt", read it line by line, ignore empty lines and comments, and convert the lines into the
 	//ControlAPI.AddAlternativeCommandName(...) commands
 	//It is assured that this function is only called once, on program start
 

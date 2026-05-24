@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ParamList_shortcuts_auto_created.h"
 #include "ParamRegister.h"
-#include "ParamList.h"
+#include "ParamListCore.h"
 #include "ParamRegister.h"
 
 //The following code is automatically created and provides you quick and easy access to all init values of outputs defined in ControlUserIOConfig.json.

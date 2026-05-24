@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "SequenceListPoint.h"
 #include "Output.h"
-#include "IOList.h"
+#include "IORegister.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -43,11 +43,11 @@ CString CSequenceListPoint::GetDescription(int Mode) {
 }
 
 CString CSequenceListPoint::GetAnalogOutName(unsigned int Nr, bool DisplayError) {
-	return IOList->GetAnalogName(Nr,DisplayError);
+	return IORegisterList->GetAnalogName(Nr,DisplayError);
 }
 
 CString CSequenceListPoint::GetDigitalOutName(unsigned int Nr, bool DisplayError) {
-	return IOList->GetDigitalName(Nr,DisplayError);
+	return IORegisterList->GetDigitalName(Nr,DisplayError);
 }
 
 void CSequenceListPoint::ExecutePoint()

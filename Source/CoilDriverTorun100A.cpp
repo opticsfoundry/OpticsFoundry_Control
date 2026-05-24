@@ -25,7 +25,7 @@ etc.
 #include "stdafx.h"
 #include "Control.h"
 #include "CoilDriverTorun100A.h"
-#include "ParamList.h"
+#include "ParamListCore.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE

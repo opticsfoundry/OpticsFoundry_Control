@@ -8,7 +8,6 @@
 #include "control.h"
 #include "output.h"
 #include "DigitalOut.h"
-#include "IOList.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

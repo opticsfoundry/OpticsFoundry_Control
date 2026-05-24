@@ -9,32 +9,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-//#include <afxtempl.h>
-#include "ParamRegister.h"
-#include "IOList.h"
-#include "OvenControl.h"
+#include "ParamListCore.h"
 #include "ParamList_shortcuts_auto_created.h"
 
 class CEvaporationSweep;
-
-class CParamList : public CParamRegister 
-{
-public:
-	bool AssemblingParamList;
-public:	
-	CParamList();
-	void Initialize();
-	virtual ~CParamList();	
-	void AdaptMenu0RadioButtonBoxVariables();
-	void AddSrFlashType(int FlashNr, bool AQuRAImaging1,bool AQuRAImaging2,bool AQuRAImaging3, bool blueAOM1, bool blueAOM2, bool redAOM, bool dipTrapAOM);
-	void AddRbFlashType(int FlashNr);
-	void AddBlowAwayFlash(int FlashNr);
-	void AddIsotopeConfiguration(int IsotopeConfigurationNr);
-	void AddTakePicture();
-	void AddFlashTypes();
-	void AddCameras();
-	bool AssembleSequence() {if (Output) {return Output->IsInAssembleSequenceListMode();} else return false;};
-};
 
 extern CString *ExperimentalRunName;
 
@@ -68,7 +46,7 @@ extern double LoadSecondIsotopeMOTLoadingTime;
 extern double SendPIDsRailingDelay;
 
 extern bool DoReadoutKeithleyMultimeter;
-extern bool DoTransmittAtomnumberToAnalogOutPort;	
+extern bool DoTransmittAtomnumberToAnalogOutPort;
 extern double TransmittAtomnumberCalibration;
 
 extern double StartLoadingTime;
@@ -545,7 +523,7 @@ extern bool AbsPictureRbRepumpPulseJustBeforeImaging;
 extern bool AbsPictureSwitchMOTBackOn;
 extern double DipoleTrapOffPowerSetpoint;
 extern bool AbsPicturePrepareShutters;
-extern bool OpenSrBlueProbeBeamShutters;		
+extern bool OpenSrBlueProbeBeamShutters;
 extern bool AbsPictureLeaveLeaveDipoleTrapOn;
 extern bool AbsPictureLeaveLeaveDipoleTrapFreq;
 extern bool AbsPictureLeaveTranspOn;
@@ -771,7 +749,7 @@ extern double CameraCalX[NrCameras];
 extern double CameraCalY[NrCameras];
 extern double CameraTemperature[NrCameras];
 extern long CameraBinningX[NrCameras];
-extern long CameraBinningY[NrCameras]; 
+extern long CameraBinningY[NrCameras];
 extern long CamerahSpeed[NrCameras];
 extern long CameraFKSDataImages[NrCameras];
 extern long CameraFKSReferenceImages[NrCameras];
@@ -835,7 +813,7 @@ extern double FluoMOTEmptyPulseFiberIntensity;
 
 
 extern bool DoLoadParametersFromFile;
-extern CString* LoadParametersFromFileName;		
+extern CString* LoadParametersFromFileName;
 extern double DoLoadParametersFromFileDelay;
 extern long DoLoadParametersFromFilePictureNumber;
 
@@ -845,4 +823,3 @@ extern bool DoHardResetRedDDSafterRun;
 
 
 #endif // !defined(AFX_PARAMLIST_H__33961DBB_41CF_400D_8038_9E507C252B98__INCLUDED_)
-

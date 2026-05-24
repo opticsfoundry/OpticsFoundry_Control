@@ -22,7 +22,7 @@
 #include "VCOCalibration.h"
 #include <math.h>
 #include "Paramlist.h"
-#include "Sequence.h"
+#include "SequenceLib.h"
 #include "ADF4351.h"
 #include "RSSML0x.h"
 #include "TektronixTDS524A.h"
@@ -58,6 +58,12 @@ COvenControl *OvenControl = NULL;
 CCoilDriverTorun3x3A *CoilDriverTorun3x3A = NULL;
 CCoilDriverTorun100A *CoilDriverTorun100A = NULL;
 bool DipoleTrap100WShutterStatus=On;
+bool IsAssemblingIOList = false;
+
+CString GetAnalogInChannelName(unsigned int Channel) {
+	if (!IOList || Channel >= NrAnalogInBoxes * 8) return "";
+	return IOList->AnalogInChannelName[Channel];
+}
 
 
 
@@ -101,6 +107,7 @@ CIOList::CIOList()
 
 void CIOList::Initialize() {
 	AssemblingIOList = true;
+	IsAssemblingIOList = true;
 	CheckLaserSecuritySign=false;
 	StartTimeOfLastLaserSecurityCheck=0;
 
@@ -109,7 +116,7 @@ void CIOList::Initialize() {
 	CString buf;	
 
 
-	Sequence->InitializeSystem(/*OnlyFast*/false);
+	SequenceBase->InitializeSystem(/*OnlyFast*/false);
 
 	
 
@@ -133,6 +140,7 @@ void CIOList::Initialize() {
 	RegisterSerialDevice(IPGLaser[4]);
 
 	AssemblingIOList = false;
+	IsAssemblingIOList = false;
 
 }
 

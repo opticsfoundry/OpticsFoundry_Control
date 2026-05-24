@@ -9,6 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "IOListConstants.h"
 #include "IORegister.h"
 #include "IOList_shortcuts_auto_created.h"
 
@@ -33,22 +34,6 @@ class CAD9959;
 #include "DDSCalibration.h"
 
 
-//Define numbers where the lists of the DDS outputs for each element in sequence.cpp starts
-// Start AD9852 DDS
-const unsigned int AQuRATestDDSAD9852StartNr=0;		//AQuRA Test	9852
-const unsigned int AQuRARedAD9852DDSStartNr=1;		//AQuRA Red		9852
-const unsigned int AQuRADT9852StartNr = 27;			//AQuRA DT		9852
-const unsigned int OtherDDS9852StartNr=34;			//AQuRA Other	9852
-
-// Start AD9858 DDS
-const unsigned int AQuRATestDDSAD9858StartNr=0;
-const unsigned int AQuRABlueStartNr = 9;			//AQuRA Blue	9858 
-const unsigned int AQuRARedStartNr = 13;			//AQuRA Red		9858 
-const unsigned int AQuRADT9858StartNr = 35;			//AQuRA DT		9858 
-
-
-
-const unsigned int NrAnalogInBoxes=2;
 extern bool DipoleTrap100WShutterStatus;
 const double DipoleTrap100WShutterTime=250;
 
@@ -99,9 +84,6 @@ public:
 extern double DDSAD9858FrequencyMin;
 extern double DDSAD9852StartFrequencyMin;
 extern double DDSAD9852StopFrequencyMin;
-
-
-constexpr unsigned int IPGLaserNumber=10;
 
 
 extern double GetComparatorAnalogIn(int Box, int Channel,unsigned short Bits=16);
@@ -239,7 +221,6 @@ extern CBurleighWA1000Wavemeter* BurleighWA1000Wavemeter;
 
 extern CRSSML0x* KHFBeatlockSynthesizer;
 extern CRSSML0x* KImagingBeatlockSynthesizer;
-const unsigned int NrKeithleyMultimeter=1;
 extern CKeithley2000* KeithleyMultimeter[NrKeithleyMultimeter];
 
 extern void SwitchOvenError(bool OnOff);

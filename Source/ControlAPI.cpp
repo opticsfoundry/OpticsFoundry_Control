@@ -5,11 +5,11 @@
 #include "ControlAPI.h"
 #include "stdafx.h"
 #include "Control.h"
-#include "ParamList.h"
-#include "Sequence.h"
+#include "IORegister.h"
+#include "SequenceLib.h"
 #include "Ramp.h"
 //#include "ParamRegister.h"
-//#include "ParamList.h"
+//#include "IORegister.h"
 #include <math.h>
 #include "EthernetMultiIOControllerOpticsFoundry.h"
 #include "ControlAPI.h"
@@ -113,7 +113,7 @@ void  CControlAPI::SwitchDebugMode(bool OnOff, bool aDebugTimingOnOff) {
 	DebugModeOn = OnOff;
 	ControlAPI_Sequencer->SwitchDebugMode(OnOff);
 	if (OnOff) {
-		
+
 	}
 	if (DebugTimingOnOff) {
 		LastTimingMark = GetTickCount();
@@ -223,11 +223,11 @@ void CControlAPI::SetControlAPISequencer(CEthernetMultiIOControllerOpticsFoundry
 	ControlAPI_Sequencer = aSequencer;
 }
 
-bool CControlAPI::ConnectToSequencer(const unsigned char* IP, unsigned long port, double timeout_in_seconds) { 
+bool CControlAPI::ConnectToSequencer(const unsigned char* IP, unsigned long port, double timeout_in_seconds) {
 	//ProcessingMessage = true;
-	ErrorNotYetImplemented(); 
+	ErrorNotYetImplemented();
 	//ProcessingMessage = false;
-	return false; 
+	return false;
 } //automatically executed during program start; needs to be only called if FPGA has been reset
 
 bool CControlAPI::CheckIfSequencerReady(double timeout_in_seconds) {
@@ -277,7 +277,7 @@ bool CControlAPI::SingleCommand(CString CodeLine) {
 	CString Command;
 	CString Arguments;
 	DecodeCommand(CodeLine, Command, Arguments);
-	//possible improvement of the following: define unordered map with commands as keys and functions as second. Would enable O(1) 
+	//possible improvement of the following: define unordered map with commands as keys and functions as second. Would enable O(1)
 	bool success = true;
 	if (Command == "Ramp") Ramp(Arguments);
 	else if (Command == "Wait") Wait(Arguments);
@@ -300,15 +300,15 @@ bool CControlAPI::SingleCommand(CString CodeLine) {
 	else if (Command == "WriteToI2C") WriteToI2C(Arguments);
 	else if (Command == "WriteToSPI") WriteToSPI(Arguments);*/
 	else {
-		CDigitalOut* dout = IOList->GetDigitalOut(Command, /*aNoError = */ true);
+		CDigitalOut* dout = IORegisterList->GetDigitalOut(Command, /*aNoError = */ true);
 		if (dout) {
 			dout->Out((Arguments == "1") || (Arguments == "On") || (Arguments == "on") || (Arguments == "ON") || (Arguments == "true") || (Arguments == "True") || (Arguments == "TRUE"));
 		} else {
-			CAnalogOut* aout = IOList->GetAnalogOut(Command, /*aNoError = */ true);
+			CAnalogOut* aout = IORegisterList->GetAnalogOut(Command, /*aNoError = */ true);
 			if (aout) {
 				aout->Out(atof(Arguments));
 			} else {
-				success = false;			
+				success = false;
 			}
 		}
 	}
@@ -336,8 +336,8 @@ void CControlAPI::ProgramSequence() {
 		DebugFile = new ofstream();
 		DebugFile->open(*DebugFilePath + "DebugCommandSequence.dat");// , CFile::modeCreate | CFile::modeWrite);
 	}
-	Sequence->SetAssembleSequenceListMode();
-	Sequence->StartSequence();
+	SequenceBase->SetAssembleSequenceListMode();
+	SequenceBase->StartSequence();
 	ControlAPI_AssemblingSequence = true;
 	CurrentLineNumber = 0;
 	LastCommandWithError = "";
@@ -348,7 +348,7 @@ void CControlAPI::ProgramSequence() {
 void CControlAPI::SwitchToDirectOutputMode() {
 	//ProcessingMessage = true;
 	DoStoreSequenceInMemory = false;
-	Sequence->SetDirectOutputMode();
+	SequenceBase->SetDirectOutputMode();
 	ControlAPI_AssemblingSequence = false;
 	//ProcessingMessage = false;
 }
@@ -410,21 +410,21 @@ bool CControlAPI::StartSequence(bool ShowRunProgressDialog) {
 		//ProcessingMessage = false;
 		return false;
 	}
-	Sequence->StopSequence();
-	CycleDuration_in_ms = Sequence->GetTime();
+	SequenceBase->StopSequence();
+	CycleDuration_in_ms = SequenceBase->GetTime();
 	ControlAPI_AssemblingSequence = false;
-	Sequence->SetWaveformGenerationMode();
+	SequenceBase->SetWaveformGenerationMode();
 	StartLastCycleTickCount = GetTickCount();
-	Sequence->ExecuteSequenceList(/*ShowRunProgressDialog */ShowRunProgressDialog, /*NonBlocking */ true);
+	SequenceBase->ExecuteSequenceList(/*ShowRunProgressDialog */ShowRunProgressDialog, /*NonBlocking */ true);
 	//Sequence->Wait(20);
 	ControlAPI_SequenceStarted = true;
 	//ToDo: go back to direct output mode when finished
 
 	if (DebugSequenceListOn) {
-		Sequence->DebugSequenceList(*DebugFilePath + "SequenceListAfterExecution.dat", 0);
-		Sequence->DebugSequenceList(*VirtualOsciFilePath + "SequenceListAfterExecutionComputerReadable.dat", 1);
-		Sequence->DebugSequenceList(*DebugFilePath + "SequenceListAfterExecutionCodeBlocks.dat", 2);
-		IOList->SaveOutputListComputerReadable(*VirtualOsciFilePath + "OutputListComputerReadable.dat");
+		SequenceBase->DebugSequenceList(*DebugFilePath + "SequenceListAfterExecution.dat", 0);
+		SequenceBase->DebugSequenceList(*VirtualOsciFilePath + "SequenceListAfterExecutionComputerReadable.dat", 1);
+		SequenceBase->DebugSequenceList(*DebugFilePath + "SequenceListAfterExecutionCodeBlocks.dat", 2);
+		IORegisterList->SaveOutputListComputerReadable(*VirtualOsciFilePath + "OutputListComputerReadable.dat");
 	}
 	if (DebugFile) {
 		DebugFile->close();
@@ -439,10 +439,10 @@ double CControlAPI::GetSequenceDuration() {
 	//ProcessingMessage = true;
 	if (DoStoreSequenceInMemory) {
 		AssembleSequenceListFromMemory();
-		Sequence->StopSequence();
-		Sequence->SetDirectOutputMode();
-	} 
-	double ret = Sequence->GetTime();
+		SequenceBase->StopSequence();
+		SequenceBase->SetDirectOutputMode();
+	}
+	double ret = SequenceBase->GetTime();
 	//ProcessingMessage = false;
 	return ret;
 }
@@ -459,7 +459,7 @@ bool CControlAPI::IsSequenceRunning() {
 		//return false;
 	//}
 	//ProcessingMessage = true;
-	bool ret = Sequence->IsSequenceRunning();
+	bool ret = SequenceBase->IsSequenceRunning();
 	if (!ret) ControlAPI_SequenceStarted = false;
 	//ProcessingMessage = false;
 	return ret;
@@ -474,14 +474,14 @@ bool CControlAPI::WaitTillSequenceEnds(double timeout_in_seconds) {
 		return true;
 	}
 	DWORD StartTime = GetTickCount();
-	while (Sequence->IsSequenceRunning() && ((GetTickCount() - StartTime) < 1000 * timeout_in_seconds)) {}
-	if (Sequence->IsSequenceRunning()) {
+	while (SequenceBase->IsSequenceRunning() && ((GetTickCount() - StartTime) < 1000 * timeout_in_seconds)) {}
+	if (SequenceBase->IsSequenceRunning()) {
 		//Timestamp.Mark("CControlAPI::WaitTillSequenceEnds timeout");
 		//ProcessingMessage = false;
 		return false;
-	} 
+	}
 	//Timestamp.Mark("CControlAPI::WaitTillSequenceEnds sequence ended");
-	Sequence->SetDirectOutputMode();
+	SequenceBase->SetDirectOutputMode();
 	//Timestamp.Mark("CControlAPI::WaitTillSequenceEnds direct mode");
 	//ProcessingMessage = false;
 	return true;
@@ -499,9 +499,9 @@ void CControlAPI::WaitTillRampsEnd(CString arguments) {
 	Tokenizer(arguments, ",", args);
 	if (args.GetSize() == 1) {
 		unsigned long ID = atoi(args[0]);
-		Sequence->WaitTillEndOfWaveforms(ID);
+		SequenceBase->WaitTillEndOfWaveforms(ID);
 	} else if (args.GetSize() == 0) {
-		Sequence->WaitTillEndOfWaveforms(0);
+		SequenceBase->WaitTillEndOfWaveforms(0);
 	} else {
 		ControlMessageBox("ControlAPI.cpp: WaitTillRampsEnd() called with wrong number of arguments");
 		CommandError("WaitTillRampsEnd("+arguments+")");
@@ -514,9 +514,9 @@ void CControlAPI::WaitTillBusBufferEmpty(CString arguments) {
 	Tokenizer(arguments, ",", args);
 	if (args.GetSize() == 1) {
 		unsigned long ID = atoi(args[0]);
-		Sequence->WaitTillBusBufferEmpty(ID);
+		SequenceBase->WaitTillBusBufferEmpty(ID);
 	} else if (args.GetSize() == 0) {
-		Sequence->WaitTillBusBufferEmpty();
+		SequenceBase->WaitTillBusBufferEmpty();
 	} else {
 		ControlMessageBox("ControlAPI.cpp: WaitTillBusBufferEmpty() called with wrong number of arguments");
 		CommandError("WaitTillBusBufferEmpty("+arguments+")");
@@ -529,9 +529,9 @@ void CControlAPI::FinishLastGoBackInTime(CString arguments) {
 	Tokenizer(arguments, ",", args);
 	if (args.GetSize() == 1) {
 		unsigned int ID = atoi(args[0]);
-		Sequence->FinishLastGoBackInTime(ID);
+		SequenceBase->FinishLastGoBackInTime(ID);
 	} else if (args.GetSize() == 0) {
-		Sequence->FinishLastGoBackInTime();
+		SequenceBase->FinishLastGoBackInTime();
 	} else {
 		ControlMessageBox("ControlAPI.cpp: FinishLastGoBackInTime() called with wrong number of arguments");
 		CommandError("FinishLastGoBackInTime("+arguments+")");
@@ -544,9 +544,9 @@ void CControlAPI::ReturnToCurrentTime(CString arguments) {
 	Tokenizer(arguments, ",", args);
 	if (args.GetSize() == 1) {
 		unsigned int ID = atoi(args[0]);
-		Sequence->ReturnToCurrentTime(ID);
+		SequenceBase->ReturnToCurrentTime(ID);
 	} else if (args.GetSize() == 0) {
-		Sequence->ReturnToCurrentTime();
+		SequenceBase->ReturnToCurrentTime();
 	} else {
 		ControlMessageBox("ControlAPI.cpp: ReturnToCurrentTime() called with wrong number of arguments");
 		CommandError("ReturnToCurrentTime("+arguments+")");
@@ -560,10 +560,10 @@ void CControlAPI::GoToTime(CString arguments) {
 	if (args.GetSize() == 2) {
 		double aTime_in_ms = atof(args[0]);
 		unsigned int ID = atoi(args[1]);
-		Sequence->GoToTime(aTime_in_ms, ID);
+		SequenceBase->GoToTime(aTime_in_ms, ID);
 	} else if (args.GetSize() == 1) {
 		double aTime_in_ms = atof(args[0]);
-		Sequence->GoToTime(aTime_in_ms);
+		SequenceBase->GoToTime(aTime_in_ms);
 	} else {
 		ControlMessageBox("ControlAPI.cpp: GoToTime() called with wrong number of arguments");
 		CommandError("GoToTime("+arguments+")");
@@ -577,10 +577,10 @@ void CControlAPI::GoBackInTime(CString arguments) {
 	if (args.GetSize() == 2) {
 		double aTimeJump_in_ms = atof(args[0]);
 		unsigned int ID = atoi(args[1]);
-		Sequence->GoBackInTime(aTimeJump_in_ms, ID);
+		SequenceBase->GoBackInTime(aTimeJump_in_ms, ID);
 	} else if (args.GetSize() == 1) {
 		double aTimeJump_in_ms = atof(args[0]);
-		Sequence->GoBackInTime(aTimeJump_in_ms);
+		SequenceBase->GoBackInTime(aTimeJump_in_ms);
 	} else {
 		ControlMessageBox("ControlAPI.cpp: GoBackInTime() called with wrong number of arguments");
 		CommandError("GoBackInTime("+arguments+")");
@@ -805,7 +805,7 @@ void CControlAPI::OnIdle(CWnd* parent) {
 					Cycling = false;
 					BlockProcessingMessages(false);
 					return;
-				} 
+				}
 				else {
 					MarkTiming("StartSequence call end 2");
 					LastStartPreTriggerTime = GetTickCount();
@@ -853,20 +853,20 @@ bool CControlAPI::GetCycleData(unsigned char*& buffer, unsigned long& buffer_len
 	return true;
 }
 
-void CControlAPI::StopCycling() { 
+void CControlAPI::StopCycling() {
 	if (EnterWindowsCriticalPriorityMode) {
 		delete EnterWindowsCriticalPriorityMode;
 		EnterWindowsCriticalPriorityMode = NULL;
 	}
 	//ProcessingMessage = true;
-	DoStopCycling = true; 
+	DoStopCycling = true;
 	ControlAPI_Sequencer->WaitForPeriodicTrigger(false);
 	ControlAPI_Sequencer->TransmitOnlyDifferenceBetweenCommandSequenceIfPossible(false);
 	//ProcessingMessage = false;
 }
 
-bool CControlAPI::IsCycling() { 
-	return Cycling; 
+bool CControlAPI::IsCycling() {
+	return Cycling;
 }
 
 bool CControlAPI::DataAvailable() {
@@ -954,7 +954,7 @@ void CControlAPI::StartAnalogInAcquisition(CString argunents) {
 	}
 	if (Output->SequencerList[Sequencer_Nr]) {
 		Output->SequencerList[Sequencer_Nr]->StartAnalogInAcquisition(SPI_port, SPI_CS, channel_number, number_of_datapoints, delay_between_datapoints_in_ms);
-	} 
+	}
 	else {
 		ControlMessageBox("CControlAPI::StartAnalogInAcquisition : Sequencer not defined");
 		return;
@@ -1117,14 +1117,14 @@ bool CControlAPI::ResetInterlock() {
 void CControlAPI::SetExternalTrigger(bool ExternalTrigger0, bool ExternalTrigger1) {
 	//ProcessingMessage = true;
 	//ControlAPI_Sequencer->SetExternalTrigger(ExternalTrigger0, ExternalTrigger1);
-	Sequence->SetTriggerExternal(ExternalTrigger0, ExternalTrigger1);
+	SequenceBase->SetTriggerExternal(ExternalTrigger0, ExternalTrigger1);
 	//ProcessingMessage = false;
 }
 
 void CControlAPI::SetExternalClock(bool ExternalClock0, bool ExternalClock1 ) {
 	//ProcessingMessage = true;
 	//ControlAPI_Sequencer->SetExternalClock(ExternalClock0, ExternalClock1);
-	Sequence->SetClockExternal(ExternalClock0, ExternalClock1);
+	SequenceBase->SetClockExternal(ExternalClock0, ExternalClock1);
 	//ProcessingMessage = false;
 }
 
@@ -1225,7 +1225,7 @@ void CControlAPI::Ramp(CString arguments) {
 	double ramp_time_in_ms = atof(args[3]);
 	double timestep_in_ms = atof(args[4]);
 	USES_CONVERSION;
-	Sequence->Waveform(new CRamp(output_name, start_value, end_value, ramp_time_in_ms, timestep_in_ms));
+	SequenceBase->Waveform(new CRamp(output_name, start_value, end_value, ramp_time_in_ms, timestep_in_ms));
 	//ProcessingMessage = false;
 }
 
@@ -1240,7 +1240,7 @@ void CControlAPI::Wait(CString arguments) {
 	}
 	double time_in_ms = atof(args[0]);
 	unsigned long ID = (args.GetSize() == 2) ? atoi(args[1]) : 1234;
-	Sequence->Wait(time_in_ms, ID);
+	SequenceBase->Wait(time_in_ms, ID);
 	//ProcessingMessage = false;
 }
 
@@ -1252,7 +1252,7 @@ void CControlAPI::StopRamps() {
 
 void CControlAPI::_StopRamps() {
 	//ProcessingMessage = true;
-	Sequence->RemoveWaveformGroup();
+	SequenceBase->RemoveWaveformGroup();
 	//ProcessingMessage = false;
 }
 
@@ -1290,7 +1290,7 @@ bool CControlAPI::WriteToI2C(unsigned int port_nr, const std::string& command, u
 	return false;
 }
 
-bool CControlAPI::WriteToSPI(unsigned int port_nr, const std::string& command, unsigned long length) 
+bool CControlAPI::WriteToSPI(unsigned int port_nr, const std::string& command, unsigned long length)
 {
 	//ProcessingMessage = true;
 	ErrorNotYetImplemented();
@@ -1300,9 +1300,9 @@ bool CControlAPI::WriteToSPI(unsigned int port_nr, const std::string& command, u
 
 bool CControlAPI::ProgramInterlockSequence() {
 	//ProcessingMessage = true;
-	ErrorNotYetImplemented(); 
+	ErrorNotYetImplemented();
 	//ProcessingMessage = false;
-	return false; 
+	return false;
 }
 
 bool CControlAPI::InterruptSequence() {

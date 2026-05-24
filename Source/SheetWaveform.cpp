@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "Control.h"
 #include "SheetWaveform.h"
-#include "IOList.h"
+#include "IORegister.h"
 #include "SystemParamList.h"
 
 #ifdef _DEBUG
@@ -37,9 +37,9 @@ CSheetWaveform::CSheetWaveform(CString aFrequencyOutputName, CString aIntensityO
 	FrequencyLow=aFrequencyLow;
 	FrequencyHigh=aFrequencyHigh;
 	StartTime=Output->GetTime();	
-	FrequencyOut=IOList.GetAnalogOut(FrequencyOutputName,true);
-	IntensityOut=IOList.GetAnalogOut(IntensityOutputName,true);
-	SwitchOut=IOList.GetDigitalOut(SwitchOutputName,true);
+	FrequencyOut=IORegisterList->GetAnalogOut(FrequencyOutputName,true);
+	IntensityOut=IORegisterList->GetAnalogOut(IntensityOutputName,true);
+	SwitchOut=IORegisterList->GetDigitalOut(SwitchOutputName,true);
 	if ((FrequencyOut==NULL) || (IntensityOut==NULL) || (SwitchOut==NULL)) {
 		AfxMessageBox("CSingleWaveform::CSingleWaveform :: Channel "+aFrequencyOutputName+" or Channel "+aIntensityOutputName+" or Channel "+aSwitchOutputName+" does not exist.",MB_OK);
 		Active=false;	

@@ -8,7 +8,6 @@
 #include <math.h>
 #include <fstream>
 using namespace std;
-#include "IOList.h"
 #include "StepwiseLinearCalibration.h"
 
 #ifdef _DEBUG
@@ -22,7 +21,7 @@ static char THIS_FILE[]=__FILE__;
 //////////////////////////////////////////////////////////////////////
 
 CVCOCalibration::CVCOCalibration(unsigned int aVCONumber,unsigned int aIntensityAnalogOutNr, unsigned int aFrequencyAnalogOutNr,CString aDirectory,CString aName)
-{		
+{
 	//These Intensity to Voltage calibration parameters apply for our VCO boxes
 	//Use SetIntensityToVoltageCalibration to specify a different calibration
 	TweezerIntensityOverFrequencyCalibration=NULL;
@@ -50,8 +49,8 @@ CVCOCalibration::CVCOCalibration(unsigned int aVCONumber,unsigned int aIntensity
 	VCOFrequencyMin=75;
 	CalibrationOn=false;
 	FrequencyAnalogOutNr=aFrequencyAnalogOutNr;
-	IntensityAnalogOutNr=aIntensityAnalogOutNr;		
-	LoadVCOCalibrationFrequency();	
+	IntensityAnalogOutNr=aIntensityAnalogOutNr;
+	LoadVCOCalibrationFrequency();
 }
 
 CVCOCalibration::~CVCOCalibration()
@@ -63,7 +62,7 @@ CVCOCalibration::~CVCOCalibration()
 }
 
 double CVCOCalibration::ConvertPositionToFrequency(double aFrequency)
-{	
+{
 	double Frequency=aFrequency;
 	if (ConvertPositionToFrequencyMode==1) {
 		Frequency=CenterFrequency+aFrequency*PositionCalibration;  //A position is converted to Frequency;
@@ -75,7 +74,7 @@ double CVCOCalibration::ConvertPositionToFrequency(double aFrequency)
 	if (!VCOCalibrationFrequency) {
 		CString buf;
 		buf.Format("CVCOCalibration::ConvertPositionToFrequency :  VCO %u no frequency calibration",VCONumber);
-		ControlMessageBox(buf);		
+		ControlMessageBox(buf);
 		return Frequency;
 	}
 	Frequency*=1000000;
@@ -88,7 +87,7 @@ double CVCOCalibration::ConvertPositionToFrequency(double aFrequency)
 		else return VCOCalibrationFrequency[VCOCalibrationFrequencyPoints-1];
 	}
 	double Deltafi=(VCOFrequencyMax-VCOFrequencyMin)/(VCOCalibrationFrequencyPoints-1);
-	double fi=i*Deltafi+VCOFrequencyMin;	
+	double fi=i*Deltafi+VCOFrequencyMin;
 	double Voltage=VCOCalibrationFrequency[i]+(VCOCalibrationFrequency[i+1]-VCOCalibrationFrequency[i])*(Frequency-fi)/Deltafi;
 	if (Voltage>VCOVoltageMax) Voltage=VCOVoltageMax;
 	if (Voltage<VCOVoltageMin) Voltage=VCOVoltageMin;
@@ -97,7 +96,7 @@ double CVCOCalibration::ConvertPositionToFrequency(double aFrequency)
 
 void CVCOCalibration::CalculateVCOCalibrationFrequency(unsigned int aVCOCalibrationFrequencyPoints)
 {
-	VCOCalibrationFrequencyPoints=aVCOCalibrationFrequencyPoints;	
+	VCOCalibrationFrequencyPoints=aVCOCalibrationFrequencyPoints;
 	if (!VCOCalibrationVoltage) {
 		ControlMessageBox("CVCOCalibration::CalculateVCOCalibrationFrequency : no voltage calibration");
 		return;
@@ -126,7 +125,7 @@ void CVCOCalibration::CalculateVCOCalibrationFrequency(unsigned int aVCOCalibrat
 		double Vn=n*(VCOVoltageMax-VCOVoltageMin)/(VCOCalibrationVoltagePoints-1)+VCOVoltageMin;
 		double Vn_1=(n-1)*(VCOVoltageMax-VCOVoltageMin)/(VCOCalibrationVoltagePoints-1)+VCOVoltageMin;
 		VCOCalibrationFrequency[i]=Vn_1+(Vn-Vn_1)/(VCOCalibrationVoltage[n]-VCOCalibrationVoltage[n-1])*(fi-VCOCalibrationVoltage[n-1]);
-	}	
+	}
 }
 
 void CVCOCalibration::SaveVCOCalibrationVoltage()
@@ -143,12 +142,12 @@ void CVCOCalibration::SaveVCOCalibrationVoltage()
 	out<<VCOCalibrationVoltagePoints<<endl;
 	out<<VCOVoltageMin<<endl;
 	out<<VCOVoltageMax<<endl;
-	for (unsigned int i=0;i<VCOCalibrationVoltagePoints;i++) out<<VCOCalibrationVoltage[i]<<endl;	
+	for (unsigned int i=0;i<VCOCalibrationVoltagePoints;i++) out<<VCOCalibrationVoltage[i]<<endl;
 	out.close();
 	buf.Format("%sVCO%iVolt.dat",Directory,VCONumber);
 	out.open(buf);
 	buf.Format("Voltage Frequency%i",VCONumber);
-	out<<buf<<endl;	
+	out<<buf<<endl;
 	for (unsigned int i=0;i<VCOCalibrationVoltagePoints;i++) {
 		out<<i*(VCOVoltageMax-VCOVoltageMin)/(VCOCalibrationVoltagePoints-1)+VCOVoltageMin<<" "<<VCOCalibrationVoltage[i]<<endl;
 	}
@@ -161,12 +160,12 @@ bool CVCOCalibration::LoadVCOCalibrationVoltage()
 	VCOCalibrationVoltage=NULL;
 	CString buf;
 	buf.Format("%sVCOCalibrationVoltage%i.dat",Directory,VCONumber);
-	ifstream in;	
+	ifstream in;
 	in.open(buf,/*ios::nocreate|*/ios::in);
 	if (!in.is_open()) {
 		ControlMessageBox("CVCOCalibration::LoadVCOCalibrationVoltage : file "+buf+" not found");
 		return false;
-	}	
+	}
 	unsigned int FileVCONumber;
 	in>>FileVCONumber;
 	if (FileVCONumber!=VCONumber) {
@@ -177,7 +176,7 @@ bool CVCOCalibration::LoadVCOCalibrationVoltage()
 	VCOCalibrationVoltage=new double[VCOCalibrationVoltagePoints];
 	in>>VCOVoltageMin;
 	in>>VCOVoltageMax;
-	for (unsigned int i=0;i<VCOCalibrationVoltagePoints;i++) in>>VCOCalibrationVoltage[i];	
+	for (unsigned int i=0;i<VCOCalibrationVoltagePoints;i++) in>>VCOCalibrationVoltage[i];
 	in.close();
 	return true;
 }
@@ -191,16 +190,16 @@ void CVCOCalibration::SaveVCOCalibrationFrequency()
 	CString buf;
 	buf.Format("%sVCOCalibrationFrequency%i.dat",Directory,VCONumber);
 	ofstream out;
-	out.open(buf);	
+	out.open(buf);
 	out<<VCONumber<<endl;
 	out<<VCOCalibrationFrequencyPoints<<endl;
 	out<<VCOFrequencyMin<<endl;
 	out<<VCOFrequencyMax<<endl;
-	for (unsigned int i=0;i<VCOCalibrationFrequencyPoints;i++) out<<VCOCalibrationFrequency[i]<<endl;	
+	for (unsigned int i=0;i<VCOCalibrationFrequencyPoints;i++) out<<VCOCalibrationFrequency[i]<<endl;
 	out.close();
-	buf.Format("%sVCO%iFrequ.dat",Directory,VCONumber);	
+	buf.Format("%sVCO%iFrequ.dat",Directory,VCONumber);
 	out.open(buf);
-	buf.Format("Voltage Frequency%i",VCONumber);	
+	buf.Format("Voltage Frequency%i",VCONumber);
 	out<<buf<<endl;
 	for (unsigned int i=0;i<VCOCalibrationFrequencyPoints;i++) {
 		out<<VCOCalibrationFrequency[i]<<" "<<i*(VCOFrequencyMax-VCOFrequencyMin)/(VCOCalibrationFrequencyPoints-1)+VCOFrequencyMin<<endl;
@@ -219,7 +218,7 @@ bool CVCOCalibration::LoadVCOCalibrationFrequency()
 	if (!in.is_open()) {
 		//ControlMessageBox("CVCOCalibration::LoadVCOCalibrationFrequency : file "+buf+" not found");
 		return false;
-	}	
+	}
 	unsigned int FileVCONumber;
 	in>>FileVCONumber;
 	if (FileVCONumber!=VCONumber) {
@@ -231,7 +230,7 @@ bool CVCOCalibration::LoadVCOCalibrationFrequency()
 	in>>VCOFrequencyMin;
 	in>>VCOFrequencyMax;
 	VCOCalibrationFrequency=new double[VCOCalibrationFrequencyPoints];
-	for (unsigned int i=0;i<VCOCalibrationFrequencyPoints;i++) in>>VCOCalibrationFrequency[i];	
+	for (unsigned int i=0;i<VCOCalibrationFrequencyPoints;i++) in>>VCOCalibrationFrequency[i];
 	in.close();
 	VCOVoltageMax=VCOCalibrationFrequency[VCOCalibrationFrequencyPoints-1];
 	VCOVoltageMin=VCOCalibrationFrequency[0];
@@ -280,12 +279,12 @@ double CVCOCalibration::ConvertIntensityToVoltage(double Intensity)
 	if (AttenuationOverFrequencyCalibrationMode==1) {
 		double Suppression=1;
 		if (TweezerIntensityOverFrequencyCalibration) Suppression=TweezerIntensityOverFrequencyCalibration->ConvertXToY(LastFrequency);
-		//if (Suppression<0) 
+		//if (Suppression<0)
 		Intensity+=(*SuppressionFactor)*Suppression;
 	}
 
 	//Intensity from 0 to -27 dBm
-	//converted to A2..A1 for fitrange 
+	//converted to A2..A1 for fitrange
 	//result: Voltage from 0..10 V
 	//for box VCOs
 	//Max=-27;
@@ -299,7 +298,7 @@ double CVCOCalibration::ConvertIntensityToVoltage(double Intensity)
 	if (Intensity<Max) Intensity=Max;
 	//double y=Intensity*((A2-A1)-0.002)/100.0+A1+0.001;
 	double y=Intensity-FitOffset;
-	double x=x0+dx*log((A1-A2)/(y-A2)-1);	
+	double x=x0+dx*log((A1-A2)/(y-A2)-1);
 	if (x>100) x=100;
 	if (x<0) x=0;
 	return x/10.0;
@@ -334,4 +333,3 @@ void CVCOCalibration::SwitchIntensityOverFrequencyCalibration(bool OnOff) {
 		if ((TweezerIntensityOverFrequencyCalibration) && (SuppressionFactor)) AttenuationOverFrequencyCalibrationMode=1;
 	} else AttenuationOverFrequencyCalibrationMode=0;
 }
-
